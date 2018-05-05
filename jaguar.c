@@ -41,7 +41,7 @@ int GetRegisterOrPC(int *reg)
 {
   extern int LabelTable[256];
 
-  LABEL regL,*regL2;
+  label_t regL,*regL2;
   long solved;
   char *p;
 
@@ -100,8 +100,8 @@ int GetRegisterOrPC(int *reg)
 
 int GetRegister(int *reg)
 {
-  LABEL regL;
-  LABEL *regL2;
+  label_t regL;
+  label_t *regL2;
   long solved;
   char *p;
 
@@ -327,11 +327,10 @@ struct cond_s{
 
 int GetCondition(int *cond)
 {
-  LABEL condition;
-  LABEL *l;
+  label_t condition;
+  label_t *l;
   long solved;
   int i;
-  char *p;
   char *save_srcLinePtr = srcLinePtr-1;
 
   *cond = 0;
@@ -353,15 +352,8 @@ int GetCondition(int *cond)
 
   if ( condition.len > 5 )  return Error(SYNTAX_ERR,"");
 
-  for ( p = condition.name; *p ; ++p ){
-    if ( *p >= 'a' && *p <= 'z' ) *p &= 0xdf;
-  }
-
-  //*(long *)l->name &= 0xdfdfdfdf;
-  //*(short *)&l->name[4] &= 0xdfdf;
-
   for( i = 0 ; conditions[i].cond ; ++i ){
-    if ( !strcmp(conditions[i].ascCond,condition.name) ){
+    if ( !strcmpi(conditions[i].ascCond,condition.name) ){
       *cond = conditions[i].cond;
       return 0;
     }

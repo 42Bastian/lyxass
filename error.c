@@ -57,19 +57,19 @@ int Error(int err_num,const char *s)
     break;
   case REDEF_ERR:
     fprintf(my_stderr,"Label redefined ! First use here: %5d : <%s>\n",
-	    ((LABEL *)s)->line,file_list[ ((LABEL *)s)->file ].name );
+	    ((label_t *)s)->line,file_list[ ((label_t *)s)->file ].name );
     break;
   case LREDEF_ERR:
     fprintf(my_stderr,"Local label redefined ! First use here: %5d : <%s>\n",
-	    ((LABEL *)s)->line,file_list[ ((LABEL *)s)->file ].name );
+	    ((label_t *)s)->line,file_list[ ((label_t *)s)->file ].name );
     break;
   case LMREDEF_ERR:
     fprintf(my_stderr,"Local macro label redefined ! First use here: %5d : <%s>\n",
-	    ((LABEL *)s)->line,file_list[ ((LABEL *)s)->file ].name );
+	    ((label_t *)s)->line,file_list[ ((label_t *)s)->file ].name );
     break;
   case MREDEF_ERR:
     fprintf(my_stderr,"Macro-name redefined ! First use here: %5d : <%s>\n",
-	    ((LABEL *)s)->line,file_list[ ((LABEL *)s)->file ].name );
+	    ((label_t *)s)->line,file_list[ ((label_t *)s)->file ].name );
     break;
   case TOOMANY_ERR:
     fprintf(my_stderr,"Global symbol memory exhausted !\n");

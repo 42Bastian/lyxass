@@ -6,12 +6,12 @@
  *
  *  date    who     version what
  *  8.8.99  42BS    v0.44   changed error-format for emacs
- *  31.8.99 42BS    v0.45   changed include-format : 
+ *  31.8.99 42BS    v0.45   changed include-format :
  *                            "file" searches current path
  *                            <file> searches BLL_ROOT/file
  *                            'file' searches upper-case path
  */
- 
+
 #define MAIN 1
 
 #include <stdio.h>
@@ -104,7 +104,7 @@ void writeRelocByte(char c, int reloc)
   }
   Global.pc++;
 }
-  
+
 void writeByte(char c)
 {
   if (Global.genesis >0 ){
@@ -241,7 +241,7 @@ int LoadFile(char *dst, long offset, long max_len, char *fn, long *len)
   if ( offset ){
     fseek(f,offset,SEEK_SET);
   }
- 
+
   readlen = fread(dst,1,max_len,f);
 
   *len = readlen;
@@ -254,7 +254,7 @@ int LoadFile(char *dst, long offset, long max_len, char *fn, long *len)
 int writeFile(char *fn,char *src,long len)
 {
   FILE *f;
-  
+
   if ( (f=fopen(fn,"wb+")) != NULL ){
     fwrite(src,len,1,f);
     fclose(f);
@@ -308,7 +308,7 @@ void help()
 	 "list expression        - set verbose (1 normal , 2 macros)\n"
 	 "global label[,label    - define label as global\n"
 	 "echo \"%%Dlabel %%Hlabel\" - print text and label-values \n"
-         "                        %%D as decimal %%H as hex\n" 
+         "                        %%D as decimal %%H as hex\n"
 	 "-------------- labels\n"
 	 " General: Labels are case-sensitive, valid characters are :\n"
 	 " 0..9, \"_\",\".\", A..Z, a..z\n"
@@ -337,7 +337,7 @@ void CommandLine(int *_argc, char **_argv)
     usage();
     exit(1);
   }
-  
+
   while ( c_arg++,argv++,--argc ){
     char *s = *argv;
     if ( s[0] != '-' ) break;
@@ -360,7 +360,7 @@ void CommandLine(int *_argc, char **_argv)
       break;
     case 'D':
       {
-	LABEL label;
+	label_t label;
 	int solved;
 
 	--argc;
@@ -369,7 +369,7 @@ void CommandLine(int *_argc, char **_argv)
 	srcLinePtr = *argv;
 
 	atom = ' ';
-	
+
 	if ( GetLabel( &label ) ) Error(CMD_ERR,"");
 	label.value = 1;
 	label.type = NORMAL;
@@ -395,7 +395,7 @@ void CommandLine(int *_argc, char **_argv)
     }
   }
   if ( argc != 1 ) Error(CMD_ERR,"");
-  
+
   if ( !outfile ){
     char *p;
     outfile = my_malloc(strlen(*argv)+2);
@@ -404,7 +404,7 @@ void CommandLine(int *_argc, char **_argv)
     while ( *p != '.' && p != outfile )
       --p;
 
-    if ( p == outfile ){ 
+    if ( p == outfile ){
       p += strlen(outfile);
       p[0] = '.';
     }
@@ -413,21 +413,21 @@ void CommandLine(int *_argc, char **_argv)
   }
 
   *_argc = c_arg;
-  
+
 }
 
-struct label_s _cycles = { 6,NORMAL,0,0,0,0,(LABEL *)0,(LABEL *)0,"CYCLES" };
+struct label_s _cycles = { 6,NORMAL,0,0,0,0,(label_t *)0,(label_t *)0,"CYCLES" };
 
 int main(int argc, char **argv)
 {
   // init
-  
+
   my_stderr = stdout; //stderr;
   chgPathToUpper = 0;
 
   InitLabels();
   InitTransASCII();
-  
+
   InitParser();
 
   memset( (char *)&Current, 0, sizeof(struct current_s) );
@@ -438,15 +438,15 @@ int main(int argc, char **argv)
   code.Mem = my_malloc(MAX_CODE_SIZE);
   code.Size = 12;
   code.Ptr = code.Mem+12;
-  
+
   bll_root = getenv("BLL_ROOT");
   bjl_root = getenv("BJL_ROOT");
- 
+
   CommandLine( &argc, argv );
 
   {
     int solved;
-    LABEL * l;
+    label_t * l;
     l=DefineLabel(&_cycles, &solved);
     l->type |= VARIABLE;
     p_cycles = &l->value;
@@ -492,7 +492,7 @@ int main(int argc, char **argv)
 	if ( Global.mainMode == LYNX ){
 	  code.Mem += 2;
 	  code.Size -=2;
-	  
+
 	  code.Mem[0] = -0x80;
 	  code.Mem[1] = 0x08;
 
@@ -500,7 +500,7 @@ int main(int argc, char **argv)
 	  code.Mem[3] = Global.run & 0xff;
 	  code.Mem[4] = code.Size >> 8;
 	  code.Mem[5] = code.Size & 0xff;
-	  
+
 	  code.Mem[6] = 'B';
 	  code.Mem[7] = 'S';
 	  code.Mem[8] = '9';
@@ -559,7 +559,7 @@ void CheckForUnsolvedLocals()
   if ( refFirst ){
     REFERENCE *ptr1,*ptr = refFirst;
     int flag = 1;
-    
+
     while ( ptr ){
       ptr1 = ptr->up;
 
@@ -570,7 +570,7 @@ void CheckForUnsolvedLocals()
 	}
 	printf("<%32s> [%5d %s]\n",ptr->unknown->name,ptr->line+1,file_list[ptr->file].name);
 	ptr->unknown = 0;
-	
+
 	if ( ptr->down ){
 	  ptr->down->up = ptr->up;
 	}
@@ -591,7 +591,7 @@ void doReference(void)
   if ( error || !Current.doRef || Current.pass2) return;
 
   if ( refFirst ){
-    
+
     REFERENCE *ptr1,*ptr = refFirst;
     struct current_s save_current = Current;
     struct code_s save_code = code;
@@ -639,8 +639,8 @@ void doReference(void)
       }
       ptr = ptr1;
     }
-    
-    //exit(1); 
+
+    //exit(1);
     sourceMode = mode;
     code = save_code;
     Current = save_current;
@@ -686,7 +686,7 @@ int mainloop(int pass2){
     code.OldPtr = code.Ptr;
 
     Current.Line++;
-    Current.varModifier = 0;    
+    Current.varModifier = 0;
     Current.LabelPtr = 0;
     Current.doRef = 0;
     Current.needsReloc = 0;
@@ -697,18 +697,18 @@ int mainloop(int pass2){
       if ( verbose > 2 || (!Current.Macro.Processing && verbose > 1) )
 	printf("%4d:$%04lx: <%s>\n",Current.Line,Global.pc,srcLine);
     }
- 
+
     if ( !atom ) continue;
-   
+
     if ( atom == ' ' ){
-      
+
       if ( GetCmd() )  continue; // empty line
       if ( checkCode(Current.Cmd,0) >= 0) continue;
 
       Error(UNKNOWN_ERR,Current.Cmd);
       continue;
     }
-    
+
     if ( GetLabel( & Current.Label ) ){
       Error(LABEL_ERR,"");
       continue;
@@ -729,7 +729,7 @@ int mainloop(int pass2){
 	 !Current.Macro.Define &&
 	 Current.ifFlag &&
 	 Current.switchFlag){
-      
+
       if ( Global.genesis ){
 	Current.Label.type |= CODELABEL;
       }
@@ -745,7 +745,7 @@ int mainloop(int pass2){
     if ( checkCode( Current.Cmd,0 ) >= 0 ) continue;
 
     Error(UNKNOWN_ERR,Current.Cmd);
-       
+
   }
 
   //  printf("Mainloop:%d\n",count--);

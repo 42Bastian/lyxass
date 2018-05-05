@@ -37,7 +37,7 @@ int ExprFailed;
 
 // temp.
 
-static LABEL expr_label;
+static label_t expr_label;
 
 #define need_ch()\
     if ( ! GetAtom() ){\

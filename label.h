@@ -26,12 +26,12 @@ typedef struct label_s{
   struct label_s *next;
   struct label_s *last;
   char name[MAX_LABEL_LEN+2];
-} LABEL;
+} label_t;
 
 
-LABEL * DefineLabel(LABEL *, int *);
-LABEL * FindLabel(LABEL *, long *);
-int FindMacro(char *, LABEL **);
+label_t * DefineLabel(label_t *, int *);
+label_t * FindLabel(label_t *, long *);
+int FindMacro(char *, label_t **);
 
 void DumpGlobals();
 void DumpLocals();

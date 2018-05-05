@@ -50,7 +50,7 @@ struct reference_s{
   int macro;
   int var;
   int mode;
-  LABEL * unknown;
+  label_t * unknown;
   char *codePtr;
   char src[1];
 };
@@ -90,13 +90,13 @@ EXTERN struct global_s{
 } Global;
 
 EXTERN struct current_s{
-  int Line;          // source-line 
+  int Line;          // source-line
   int File;          // file-nr => act. FileName
   struct macro_s Macro;
 
 
-  LABEL Label;       // line-label
-  LABEL *LabelPtr;
+  label_t Label;       // line-label
+  label_t *LabelPtr;
   int CmdLen;
   char Cmd[80];      // command
 
@@ -125,7 +125,7 @@ EXTERN struct current_s{
 } Current;
 
 
-EXTERN LABEL * unknownLabel;
+EXTERN label_t * unknownLabel;
 
 EXTERN struct code_s{
   char *Mem;

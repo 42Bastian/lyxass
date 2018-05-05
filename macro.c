@@ -30,7 +30,7 @@ char macrovars[16][16][80];
 */
 
 static int recur = 0;
-LABEL macroName;
+label_t macroName;
 
 int DefineMacro(char *s)
 {
@@ -57,10 +57,10 @@ int DefineMacro(char *s)
   return 0;
 }
 
-extern int error; 
+extern int error;
 
 int EndDefineMacro(){
-  
+
   int dummy;
 
   if ( --recur ){
@@ -74,7 +74,7 @@ int EndDefineMacro(){
   if ( dummy ) return Error(SYNTAX_ERR,"");
 
   return 0;
-}  
+}
 
 int GetOperand(char * dst)
 {
@@ -82,7 +82,7 @@ int GetOperand(char * dst)
   int ParenFlag = 0;
   int exit = FALSE;
   char *ptr = dst;
-  
+
   if ( KillSpace() ){
     while ( atom  && !exit ) {
       switch ( atom ){
@@ -90,7 +90,7 @@ int GetOperand(char * dst)
 	StringFlag ^= 1;
 	*ptr++=atom;
 	break;
-      case '{' : 
+      case '{' :
 	ParenFlag ++;
 	break;
       case '}':
@@ -123,19 +123,19 @@ int GetOperand(char * dst)
   }
   *ptr=0;
   return ptr != dst;
-}  
+}
 
 extern void undefAllMacroLocals();
 
 int CheckMacro(char * s)
 {
-  int err = 0;  
+  int err = 0;
 
   if ( Current.ifFlag && Current.switchFlag ){
     int OpCnt = 0;
     int save_atom = atom;
     struct current_s save_Current = Current;
-    LABEL *macro;
+    label_t *macro;
 
     if ( FindMacro( s , &macro) ) return -1;
 
@@ -160,7 +160,7 @@ int CheckMacro(char * s)
 
     Current.Macro.NPara = OpCnt;
     Current.Macro.Processing++;
-    
+
     undefAllMacroLocals();
 
     ++cntMacroExpand;

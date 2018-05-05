@@ -1,4 +1,3 @@
-
 /*
   pseudo.c
 
@@ -152,7 +151,7 @@ extern int DefineMacro(char *);
 
 int p_macro(int d)
 {
-  LABEL macroLabel;
+  label_t macroLabel;
 
   //  KillSpace();
 
@@ -469,7 +468,7 @@ int p_if(int d)
 int p_ifdef(int d)
 {
   long l;
-  LABEL test;
+  label_t test;
 
   if ( Current.ifCnt+1 == MAX_IF ) return Error(TOOMANYIF_ERR,"");
 
@@ -495,7 +494,7 @@ int p_ifdef(int d)
 int p_ifundef(int d)
 {
   long l;
-  LABEL test;
+  label_t test;
 
   if ( Current.ifCnt+1 == MAX_IF ) return Error(TOOMANYIF_ERR,"");
 
@@ -658,7 +657,7 @@ extern FILE *my_stderr;
 
 int p_echo(int d)
 {
-  LABEL label;
+  label_t label;
   long l;
 
   if ( !TestAtom('"') ) return Error(SYNTAX_ERR,"");
@@ -775,8 +774,8 @@ int p_isyms(int d)
 */
 int p_global(int d)
 {
-  LABEL label;
-  LABEL *plabel;
+  label_t label;
+  label_t *plabel;
   long l;
 
   do{
@@ -862,12 +861,11 @@ int p_reg(int d)
 */
 int p_unreg(int d)
 {
-  LABEL label;
-  LABEL *plabel;
+  label_t label;
+  label_t *plabel;
   long l;
 
   do{
-
     if ( GetLabel( &label ) ) return 1;
 
     if ( (plabel = FindLabel( &label, &l)) == NULL ){
@@ -909,8 +907,6 @@ int p_macmode(int d)
 }
 /*---------------------------------------------------------------------------*/
 
-
-
 int CheckPseudo(char *s)
 {
   int (*fun)(int );
@@ -926,15 +922,22 @@ int CheckPseudo(char *s)
   }
 
   if ( !Current.ifFlag ){
-    if ( ((fun == p_if) || (fun == p_ifdef) || (fun == p_ifundef) || (fun == p_ifvar)) ||
+    if ( ((fun == p_if) || (fun == p_ifdef) ||
+          (fun == p_ifundef) || (fun == p_ifvar)) ||
 	 ((fun == p_else) || (fun == p_endif)) )
+    {
       return fun(para);
+    }
     killLine();
     return 0;
   }
 
   if ( !Current.switchFlag ){
-    if ( (fun == p_switch) || (fun == p_case) || (fun == p_default) || (fun == p_ends) ) return fun(para);
+    if ( (fun == p_switch) || (fun == p_case) ||
+         (fun == p_default) || (fun == p_ends) )
+    {
+      return fun(para);
+    }
     killLine();
     return 0;
   }

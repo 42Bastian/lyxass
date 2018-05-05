@@ -5,7 +5,3 @@
 #endif
 #define putch(a)  putc((a),stdout)
  
-#define UINT unsigned int
-#define ULONG unsigned long
-#define BYTE unsigned char
-#define WORD short int

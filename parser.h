@@ -22,7 +22,7 @@ int TestAtomOR(int x, int y);
 int GetLine();
 void killLine(void);
 int KillSpace();
-int GetLabel(LABEL *Label);
+int GetLabel(label_t *Label);
 int GetCmd(void);
 int GetComment(void);
 int CheckForComma(void);

@@ -35,7 +35,7 @@ int GetAtom(void);
 int KillSpace(void);
 int GetCmd(void);
 int GetComment(void);
-int GetLabel(LABEL *Label);
+int GetLabel(label_t *Label);
 
 /********************************************/
 /* get a source-file and add it to the list */
@@ -193,7 +193,7 @@ int GetLine()
   srcLinePtr = ptr = srcLine;
   memset((char *)ptr,0,256);
 
-  memset((char *)&Current.Label, 0, sizeof(LABEL));
+  memset((char *)&Current.Label, 0, sizeof(label_t));
 
   while ( GetChar() ){
 
@@ -411,7 +411,7 @@ int GetFileName()
 // 3. local  : . + alphanum
 // 4. macro  : .\ + alphanum
 //
-int GetLabel(LABEL *Label)
+int GetLabel(label_t *Label)
 {
   extern int LabelTable[256];
   extern int mac_mode;
@@ -420,7 +420,7 @@ int GetLabel(LABEL *Label)
   char varhelp[6],*varptr = varhelp;
   char *ptr = Label->name;
 
-  memset((char *)Label,0,sizeof(LABEL));
+  memset((char *)Label,0,sizeof(label_t));
 
   Label->type = UNSURE;
 
@@ -452,7 +452,7 @@ int GetLabel(LABEL *Label)
     } else {
       Label->type |= MACRO;
 
-      if ( (!GetAtom()) < 0 ) return Error(LABEL_ERR,"");
+      if ( !GetAtom() ) return Error(LABEL_ERR,"");
       if ( atom == '~' ){
         char *ptr1 = (char *)calloc(10,1);
 
@@ -497,7 +497,7 @@ int GetLabel(LABEL *Label)
           len++;
         }
       } else if ( atom == '$' ){
-        LABEL label;
+        label_t label;
         char help[10], *p = help;
         long l;
 

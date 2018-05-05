@@ -11,5 +11,5 @@ struct opcode_s{
 };
 
 
-int SearchOpcode(const struct opcode_s *,char *);
-int SearchOpcode2(const struct opcode_s *,char *, int (**)(int ),int *);
+int SearchOpcode(const struct opcode_s *, const char *);
+int SearchOpcode2(const struct opcode_s *, const char *, int (**)(int ),int *);

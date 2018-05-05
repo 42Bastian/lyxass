@@ -18,24 +18,24 @@
 void DumpLocals();
 void CheckForUnsolvedLocals();
 
-LABEL * hash[256];
+label_t * hash[256];
 
 // base for various labels
-LABEL *local_labels;
-LABEL *global_labels;
-LABEL *macro_labels;
-LABEL *macronames;
+label_t *local_labels;
+label_t *global_labels;
+label_t *macro_labels;
+label_t *macronames;
 
 // ptrs to the next free space
-LABEL *next_local;
-LABEL *next_global;
-LABEL *next_macro;
-LABEL *next_macroname;
+label_t *next_local;
+label_t *next_global;
+label_t *next_macro;
+label_t *next_macroname;
 
 // ptrs to chained labels
-LABEL *local_hook = NULL;
-LABEL *macro_hook = NULL;
-LABEL *macroname_hook = NULL;
+label_t *local_hook = NULL;
+label_t *macro_hook = NULL;
+label_t *macroname_hook = NULL;
 
 int n_local = 0;
 int n_global = 0;
@@ -48,15 +48,15 @@ void InitLabels(void)
 {
   int c,c1;
 
-  memset((char *) hash, 0, 256*sizeof(LABEL *));
+  memset((char *) hash, 0, 256*sizeof(label_t *));
   next_local =
-    local_labels = (LABEL *)my_malloc( sizeof(LABEL) * MAX_LOCAL_LABELS );
+    local_labels = (label_t *)my_malloc( sizeof(label_t) * MAX_LOCAL_LABELS );
   next_global =
-    global_labels = (LABEL *)my_malloc( sizeof(LABEL) * MAX_GLOBAL_LABELS );
+    global_labels = (label_t *)my_malloc( sizeof(label_t) * MAX_GLOBAL_LABELS );
   next_macro =
-    macro_labels = (LABEL *)my_malloc( sizeof(LABEL) * MAX_MACRO_LABELS );
+    macro_labels = (label_t *)my_malloc( sizeof(label_t) * MAX_MACRO_LABELS );
   next_macroname =
-    macronames = (LABEL *)my_malloc( sizeof(LABEL) * MAX_MACROS);
+    macronames = (label_t *)my_malloc( sizeof(label_t) * MAX_MACROS);
 
   memset((char *)LabelTable, FALSE, 256 * sizeof(int) );
 
@@ -89,14 +89,14 @@ void ClearLocals()
   CheckForUnsolvedLocals();
   next_local = local_labels;
   local_hook = NULL;
-  memset((char *)local_labels, 0,  sizeof(LABEL)*MAX_LOCAL_LABELS);
+  memset((char *)local_labels, 0,  sizeof(label_t)*MAX_LOCAL_LABELS);
 }
 
-LABEL * DefineLabel(LABEL *l, int *solved)
+label_t * DefineLabel(label_t *l, int *solved)
 {
   int hashvalue;
-  LABEL *ptr;
-  LABEL *_this;
+  label_t *ptr;
+  label_t *_this;
 //->  extern int mac_mode;
 
   *solved = 0;
@@ -118,7 +118,7 @@ LABEL * DefineLabel(LABEL *l, int *solved)
       CheckForUnsolvedLocals();
       next_local = local_labels;
       local_hook = NULL;
-      memset((char *)local_labels, 0, sizeof(LABEL)*MAX_LOCAL_LABELS);
+      memset((char *)local_labels, 0, sizeof(label_t)*MAX_LOCAL_LABELS);
 
     }
     // get hash-value
@@ -217,7 +217,7 @@ LABEL * DefineLabel(LABEL *l, int *solved)
       ptr->next = next_macro;
     }
 
-    l->next = (LABEL *)NULL;
+    l->next = (label_t *)NULL;
     _this = next_macro;
     *next_macro++ = *l;
     ++n_localmacro;
@@ -263,7 +263,7 @@ LABEL * DefineLabel(LABEL *l, int *solved)
       ptr->next = next_local;
     }
 
-    l->next = (LABEL *)NULL;
+    l->next = (label_t *)NULL;
     _this = next_local;
     *next_local++ = *l;
     ++n_local;
@@ -297,7 +297,7 @@ LABEL * DefineLabel(LABEL *l, int *solved)
       ptr->next = next_macroname;
     }
 
-    l->next = (LABEL *)NULL;
+    l->next = (label_t *)NULL;
     _this = next_macroname;
     *next_macroname++ = *l;
     ++n_macro;
@@ -309,9 +309,9 @@ LABEL * DefineLabel(LABEL *l, int *solved)
 //---------------------------------------------------------------------
 // FindLabel
 //---------------------------------------------------------------------
-LABEL * FindLabel(LABEL *l, long *value)
+label_t * FindLabel(label_t *l, long *value)
 {
-  LABEL *next;
+  label_t *next;
 
   if ( l->type & LOCAL ){
     next = local_hook;
@@ -338,9 +338,9 @@ LABEL * FindLabel(LABEL *l, long *value)
   return 0;
 }
 
-int FindMacro(char *s, LABEL ** macro)
+int FindMacro(char *s, label_t ** macro)
 {
-  LABEL *ptr = macroname_hook;
+  label_t *ptr = macroname_hook;
 
   while ( ptr ){
     if ( ! strcmp(s,ptr->name) ){
@@ -359,7 +359,7 @@ int FindMacro(char *s, LABEL ** macro)
 
 void undefAllMacroLocals()
 {
-  LABEL * ptr = macro_hook;
+  label_t * ptr = macro_hook;
 
   for ( ; ptr ; ptr = ptr->next){
     ptr->type |= UNSOLVED;
@@ -372,7 +372,7 @@ extern FILE * my_stderr;
 
 void DumpGlobals()
 {
-  LABEL * next;
+  label_t * next;
   int i;
   fprintf(my_stderr,"Global labels:\n");
   for (i = 0; i < 256; ++i){
@@ -387,7 +387,7 @@ void DumpGlobals()
 
 void writeSymbols(char *fn)
 {
-  LABEL * next;
+  label_t * next;
   int i;
   FILE *fh;
   char *help = fn + strlen(fn);
@@ -419,7 +419,7 @@ void writeSymbols(char *fn)
 void hashStatistics()
 {
   int i,total = 0;
-  LABEL *next;
+  label_t *next;
   for(i = 0 ; i < 256;++i){
     int o = 0;
     for (next = hash[i]; next; next = next->next ){
@@ -433,7 +433,7 @@ void hashStatistics()
 
 void DumpLocals()
 {
-  LABEL * next = local_labels;
+  label_t * next = local_labels;
   fprintf(my_stderr,"Local labels:\n");
   for ( ; next ; next = next->next ){
     fprintf(my_stderr,"<%32s> = %04lx [%5d %s]\n",next->name,next->value,next->line,file_list[next->file].name);
@@ -442,7 +442,7 @@ void DumpLocals()
 
 void DumpMacros()
 {
-  LABEL * next = macroname_hook;
+  label_t * next = macroname_hook;
   fprintf(my_stderr,"Macros:\n");
   for ( ; next ; next = next->next ){
     fprintf(my_stderr,"<%32s> [%5d %s]\n",next->name,next->line,file_list[next->file].name);
