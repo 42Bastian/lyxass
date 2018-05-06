@@ -16,7 +16,7 @@
 #include "mnemonics.h"
 #include "jaguar.h"
 
-int Expression(long *);
+int Expression(int32_t *);
 
 void saveCurrentLine();
 
@@ -48,7 +48,7 @@ int op0(int op)
 // branch
 int op1(int op)
 {
-  long l;
+  int32_t l;
   int err;
 
   if ( (err = Expression(&l)) == EXPR_ERR) return 1;
@@ -72,9 +72,9 @@ int op1(int op)
 
 int op2(int op)
 {
-  long l;
+  int32_t l;
   int err;
-  
+
   if ( (err = Expression(&l)) == EXPR_ERR) return 1;
   if ( l < 0 || l > 65535 ) return Error(WORD_ERR,"");
 
@@ -93,14 +93,14 @@ int op2(int op)
 int op3(int op)
 {
   int err;
-  long l;
+  int32_t l;
   int komma = 0;
 
   if ( ! KillSpace() ){
     return Error(SYNTAX_ERR,"");
   }
 
-  // immediate 
+  // immediate
 
   if ( TestAtom('#') ){
 
@@ -124,7 +124,7 @@ int op3(int op)
   }
 
   // indirect
-  
+
   if ( TestAtom('(') ){
 
     if ( (err = Expression(&l)) == EXPR_ERR) return 1;
@@ -175,7 +175,7 @@ int op3(int op)
     op |= 0x04;
   }
   if ( l < 0 || l > 65535 ) Error(WORD_ERR,"");
-  
+
   if ( l > 255 || err == EXPR_UNSOLVED || Current.pass2) {
     CYCLES+=4;
     op |= 0x08;
@@ -197,7 +197,7 @@ int op3(int op)
 int op4(int op)
 {
   int err;
-  long l;
+  int32_t l;
 
   if ( (err = Expression( &l )) == EXPR_ERROR ) return 1;
 
@@ -216,16 +216,16 @@ int op4(int op)
   return 0;
 }
 
-// stz 
-  
+// stz
+
 int op5(int op)
 {
   int err;
-  long l;
+  int32_t l;
 
   if ( (err = Expression( &l )) == EXPR_ERROR ) return 1;
   if ( l < 0 || l > 65535 ) return Error(WORD_ERR,"");
-  
+
   if ( TestAtom(',') ) {
 
     if ( !TestAtomOR('x','X') ) Error(SYNTAX_ERR,"");
@@ -260,11 +260,11 @@ int op5(int op)
 int op6(int op)
 {
   int err;
-  long l;
+  int32_t l;
 
   if ( (err = Expression( &l )) == EXPR_ERROR ) return 1;
   if ( l < 0 || l > 65535 ) return Error(WORD_ERR,"");
-  
+
   if ( TestAtom(',') ) {
     if ( l > 255 || err == EXPR_UNSOLVED || Current.pass2 ) return Error(BYTE_ERR,"");
 
@@ -293,11 +293,11 @@ int op6(int op)
 int op7(int op)
 {
   int err;
-  long l;
+  int32_t l;
 
   if ( (err = Expression( &l )) == EXPR_ERROR ) return 1;
   if ( l < 0 || l > 65535 ) return Error(WORD_ERR,"");
-  
+
   if ( TestAtom(',') ) {
 
     if ( l > 255 || err == EXPR_UNSOLVED || Current.pass2 ) return Error(BYTE_ERR,"");
@@ -326,11 +326,11 @@ int op7(int op)
 int op8(int op)
 {
   int err;
-  long l;
+  int32_t l;
   int flag = 0;
 
   if ( TestAtom('#') ){
-    
+
     if ( (err = Expression( &l )) == EXPR_ERROR ) return 1;
     if ( l < -128 || l > 255 ) return Error(BYTE_ERR,"");
     CYCLES += 2;
@@ -352,7 +352,7 @@ int op8(int op)
       op |= 0x10;
       CYCLES++;
     }
-    
+
     writeConstByte(op);
     if ( flag ){
       writeWordLittle((short)l);
@@ -362,7 +362,7 @@ int op8(int op)
   }
   if ( err == EXPR_UNSOLVED ) saveCurrentLine();
   return 0;
-  
+
 }
 /*
   ldx
@@ -370,11 +370,11 @@ int op8(int op)
 int op9(int op)
 {
   int err;
-  long l;
+  int32_t l;
   int flag = 0;
 
   if ( TestAtom('#') ){
-    
+
     if ( (err = Expression( &l )) == EXPR_ERROR ) return 1;
     if ( l < -128 || l > 255 ) return Error(BYTE_ERR,"");
     CYCLES += 2;
@@ -395,7 +395,7 @@ int op9(int op)
       op |= 0x10;
       ++CYCLES;
     }
-    
+
     writeConstByte(op);
     if ( flag ){
       writeWordLittle((short)l);
@@ -404,7 +404,7 @@ int op9(int op)
     }
   }
   if ( err == EXPR_UNSOLVED ) saveCurrentLine();
-  return 0;    
+  return 0;
 }
 
 /* asl/rol/lsr/ror/dec/inc */
@@ -412,7 +412,7 @@ int op9(int op)
 int opa(int op)
 {
   int err;
-  long l;
+  int32_t l;
 
   KillSpace();
   if ( !atom ){
@@ -455,7 +455,7 @@ int opa(int op)
 int opb(int op)
 {
   int err;
-  long l;
+  int32_t l;
 
   if ( (err = Expression( &l )) == EXPR_ERROR ) return 1;
   if ( l < 0 || l > 255 ) return Error(BYTE_ERR,"");
@@ -472,7 +472,7 @@ int opb(int op)
 int opc(int op)
 {
   int err;
-  long l;
+  int32_t l;
 
   if ( TestAtom('(') ){
     if ( (err = Expression( &l )) == EXPR_ERROR ) return 1;
@@ -503,10 +503,10 @@ int opc(int op)
 int opd(int op)
 {
   int err;
-  long l;
+  int32_t l;
 
   if ( !TestAtom('#') ) return Error(SYNTAX_ERR,"");
-    
+
   if ( (err = Expression( &l )) == EXPR_ERROR ) return 1;
   if ( l < -128 || l > 255 ) return Error(BYTE_ERR,"");
   writeConstByte(op);
@@ -517,7 +517,7 @@ int opd(int op)
 }
 
 int CheckMnemonic(char *s)
-{  
+{
   if ( Current.ifFlag && Current.switchFlag){
     if ( sourceMode == LYNX ){
       if (SearchOpcode(OpCodes,s) < 0 ) return -1;

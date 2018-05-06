@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <inttypes.h>
 
 #include "my.h"
 #include "label.h"
@@ -19,8 +20,8 @@
 #include "global_vars.h"
 #include "parser.h"
 
-int Expression( long * value);
-int sum(long *value);
+int Expression64(int64_t * value);
+int sum(int64_t *value);
 
 int ExprFailed;
 
@@ -45,10 +46,9 @@ static label_t expr_label;
       return EXPR_ERR;\
     }
 
-
-int getdec(long *value)
+int getdec32(int32_t *value)
 {
-  long dec = 0;
+  int64_t dec = 0;
   int i = 0;
 
   while ( isdigit(atom) ){
@@ -63,7 +63,7 @@ int getdec(long *value)
     return EXPR_ERR;
   }
 
-  if ( (dec < 0) || (i > 10) ){
+  if ( (dec < 0) || (i > 20) ){
     *value = 0;
     Error(TOOBIG_ERR,"");
     return EXPR_ERROR;
@@ -73,9 +73,37 @@ int getdec(long *value)
   return EXPR_OK;
 }
 
-int gethex(long *value)
+
+int getdec(int64_t *value)
 {
-  long hex = 0;
+  int64_t dec = 0;
+  int i = 0;
+
+  while ( isdigit(atom) ){
+    dec *= 10;
+    dec += atom - '0';
+    GetAtom();
+    ++i;
+  }
+
+  if ( !i ){
+    Error(EXPR_ERR,"");
+    return EXPR_ERR;
+  }
+
+  if ( (dec < 0) || (i > 20) ){
+    *value = 0;
+    Error(TOOBIG_ERR,"");
+    return EXPR_ERROR;
+  }
+
+  *value = dec;
+  return EXPR_OK;
+}
+
+int gethex(int64_t *value)
+{
+  int64_t hex = 0;
   int i = 0;
 
   while ( (atom >= '0' && atom <= '9') ||
@@ -96,7 +124,7 @@ int gethex(long *value)
     return EXPR_ERR;
   }
 
-  if ( (i > 8) ){
+  if ( (i > 16) ){
     *value = 0;
     Error(TOOBIG_ERR,"");
     return EXPR_ERROR;
@@ -105,9 +133,9 @@ int gethex(long *value)
   return EXPR_OK;
 }
 
-int getbin(long *value)
+int getbin(int64_t *value)
 {
-  long bin = 0;
+  int64_t bin = 0;
   int i = 0;
   while ( atom == '1' || atom == '0' ){
     bin <<= 1;
@@ -121,7 +149,7 @@ int getbin(long *value)
     return EXPR_ERR;
   }
 
-  if ( i > 32 ){
+  if ( i > 64 ){
     Error(TOOBIG_ERR,"");
     return EXPR_ERROR;
   }
@@ -129,9 +157,9 @@ int getbin(long *value)
   return EXPR_OK;
 }
 
-int getlabel(long *value)
+int getlabel(int64_t *value)
 {
-  long lv = 0;
+  int32_t lv = 0;
   int dummy;
 
   if ( GetLabel( &expr_label) ) return EXPR_ERROR;
@@ -145,7 +173,7 @@ int getlabel(long *value)
       ++Current.needsReloc;
 //->      printf("Reloc: %s Line %4d %04x: %04x\n",file_list[Current.File].name,Current.Line,Global.pc,lv);
     }
-    *value = lv;
+    *value = (int64_t)lv;
     return EXPR_OK;
   }
 
@@ -161,11 +189,11 @@ int getlabel(long *value)
   return EXPR_OK;
 }
 
-int uni(long *value)
+int uni(int64_t *value)
 {
   int err;
   char save;
-  long a = 0;
+  int64_t a = 0;
 
 
   KillSpace();
@@ -248,15 +276,13 @@ int uni(long *value)
   return EXPR_OK;
 }
 
-
-
 /*
   product ::= uni {("*"|"\"|"<<"|">>") uni}
 */
-int product(long *value)
+int product(int64_t *value)
 {
   int err;
-  long a,b;
+  int64_t a,b;
 
   err = uni( &a );
 
@@ -304,10 +330,10 @@ int product(long *value)
 /*
   sum ::= product {("+"|"-"|"^"|"|") product}
 */
-int sum(long *value)
+int sum(int64_t *value)
 {
   int err;
-  long a,b;
+  int64_t a,b;
 
   err = product( &a );
 
@@ -340,9 +366,9 @@ int sum(long *value)
   return EXPR_OK;
 }
 
-int Expression( long * value)
+int Expression64(int64_t * value)
 {
-  long v1,v2;
+  int64_t v1,v2;
   int err;
   int flag = 0;
   *value = 0;
@@ -403,16 +429,48 @@ int Expression( long * value)
     return EXPR_OK;
 }
 
-int NeedConst( long * value, const char * op)
+
+int Expression(int32_t * pvalue)
+{
+  int err;
+  int64_t value;
+
+  err = Expression64(&value);
+
+  if ( err != EXPR_OK ){
+    return err;
+  }
+
+  if ( (value > 0xffffffffLL) || (value < (int64_t)INT32_MIN) ){
+    return Error(TOOBIG_ERR, 0);
+  }
+
+  *pvalue = (int32_t)value;
+
+  return EXPR_OK;
+}
+
+int NeedConst64( int64_t * value, const char * op)
+{
+
+  int err;
+
+  err = Expression64(value);
+
+  if ( err == EXPR_UNSOLVED ) return Error(NEEDCONST_ERR,op);
+
+  return err;
+}
+
+int NeedConst( int32_t * value, const char * op)
 {
   int err;
 
-  if ( ( err = Expression(value) ) ){
+  err = Expression(value);
 
-    if ( err == EXPR_UNSOLVED ) return Error(NEEDCONST_ERR,op);
-
-    return 1;
+  if ( err == EXPR_UNSOLVED ) {
+    return Error(NEEDCONST_ERR,op);
   }
 
-  return 0;
+  return err;
 }

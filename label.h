@@ -19,7 +19,7 @@
 typedef struct label_s{
   int len;
   int type;
-  long value;
+  int32_t value;
   int line;
   int file;
   int count;
@@ -30,7 +30,7 @@ typedef struct label_s{
 
 
 label_t * DefineLabel(label_t *, int *);
-label_t * FindLabel(label_t *, long *);
+label_t * FindLabel(label_t *, int32_t *);
 int FindMacro(char *, label_t **);
 
 void DumpGlobals();

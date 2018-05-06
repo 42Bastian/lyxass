@@ -1,6 +1,6 @@
-CC=mingw32-g++
+CC=mingw32-gcc
 
-CFLAGS= -Wall -pedantic -O2 -fomit-frame-pointer -mtune=i686
+CFLAGS=  -Wall -O2 -fomit-frame-pointer
 LDFLAGS= -s
 
 all: lyxass

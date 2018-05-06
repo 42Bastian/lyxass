@@ -11,13 +11,13 @@
 //#include "mnemonics.h"
 //#include "jaguar.h"
 
-int Expression(long *);
+int Expression(int32_t *);
 
 void saveCurrentLine();
 
 extern void writeByte(char );
 extern void writeWordBig(short );
-extern void writeLongBig(long );
+extern void writeLongBig(int32_t );
 
 int direct(int );
 int one_reg(int );
@@ -33,7 +33,7 @@ int load2_reg(int );
 int store_reg(int );
 int store2_reg(int );
 
-extern int getdec(long *);
+extern int getdec32(int32_t *);
 
 extern int mac_mode;
 
@@ -42,7 +42,7 @@ int GetRegisterOrPC(int *reg)
   extern int LabelTable[256];
 
   label_t regL,*regL2;
-  long solved;
+  int32_t solved;
   char *p;
 
   SavePosition();
@@ -52,9 +52,9 @@ int GetRegisterOrPC(int *reg)
   KillSpace();
 
   if ( (atom == 'r' || atom == 'R') && isdigit(next_atom) ){
-   long l;
+   int32_t l;
     GetAtom();
-    if ( getdec(&l) == EXPR_ERR ) return Error(REG_ERR,"");
+    if ( getdec32(&l) == EXPR_ERR ) return Error(REG_ERR,"");
     if ( l > 31 ) return Error(REG_ERR,"");
     *reg = (int)l;
     return 0;
@@ -102,7 +102,7 @@ int GetRegister(int *reg)
 {
   label_t regL;
   label_t *regL2;
-  long solved;
+  int32_t solved;
   char *p;
 
   *reg = 99;
@@ -110,9 +110,9 @@ int GetRegister(int *reg)
   KillSpace();
 
   if ( (atom == 'r' || atom == 'R') && isdigit(next_atom) ){
-    long l;
+    int32_t l;
     GetAtom();
-    if ( getdec(&l) == EXPR_ERR ) return Error(REG_ERR,"");
+    if ( getdec32(&l) == EXPR_ERR ) return Error(REG_ERR,"");
     if ( l > 31 ) return Error(REG_ERR,"");
     *reg = (int)l;
     return 0;
@@ -199,7 +199,7 @@ int two_reg(int op)
 */
 int imm_reg(int op)
 {
-  long imm;
+  int32_t imm;
   int reg;
   int err;
 
@@ -230,7 +230,7 @@ int imm_reg(int op)
 */
 int imm2_reg(int op)
 {
-  long imm;
+  int32_t imm;
   int reg;
   int err;
 
@@ -257,7 +257,7 @@ int imm2_reg(int op)
 */
 int imm3_reg(int op)
 {
-  long imm;
+  int32_t imm;
   int reg;
   int err;
 
@@ -287,7 +287,7 @@ int imm3_reg(int op)
 */
 int imm4_reg(int op)
 {
-  long imm;
+  int32_t imm;
   int reg;
   int err;
 
@@ -329,7 +329,7 @@ int GetCondition(int *cond)
 {
   label_t condition;
   label_t *l;
-  long solved;
+  int32_t solved;
   int i;
   char *save_srcLinePtr = srcLinePtr-1;
 
@@ -365,7 +365,7 @@ int GetCondition(int *cond)
 int cond_rel(int op )
 {
   int cond;
-  long dest;
+  int32_t dest;
   int err;
 
   if ( GetCondition( & cond ) ) return 1;
@@ -379,8 +379,11 @@ int cond_rel(int op )
   if ( err == EXPR_UNSOLVED ){
     saveCurrentLine();
   } else {
-    long dist = dest - (Global.pc + 2);
-    if ( dist < -32 || dist > 30 ) return Error(DISTANCE_ERR,"");
+    int32_t dist = (int32_t)dest - (Global.pc + 2);
+    if ( dist < -32 || dist > 30 ) {
+      printf("%08x %d\n",dest,dist);
+      return Error(DISTANCE_ERR,"");
+    }
     dist >>= 1;
     op  |= (dist & 31) << 5;
   }
@@ -442,7 +445,7 @@ int load_reg(int op )
     SavePosition();
 
     if ( GetRegister( &reg1 ) ){
-      long l;
+      int32_t l;
       int err;
       RestorePosition();
 
@@ -515,7 +518,7 @@ int store_reg(int op )
     op += reg2 +11;
 
     if ( GetRegister( &reg2 ) ){
-      long l;
+      int32_t l;
       int err;
       if ( (err = Expression( &l )) == EXPR_ERR ) return 1;
       if ( err == EXPR_UNSOLVED ) saveCurrentLine();

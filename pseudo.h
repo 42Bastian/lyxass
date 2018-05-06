@@ -20,6 +20,7 @@ int p_endm(int);
 int p_definebyte(int);
 int p_defineword(int);
 int p_definelong(int);
+int p_definephrase(int);
 int p_defineascii(int);
 int p_definespace(int);
 int p_include(int);
@@ -63,9 +64,11 @@ const struct opcode_s pseudo[]={
     { "DA",p_definebyte,1},{"DC.A",p_definebyte,1},
     { "DW",p_defineword,0},{"DC.W",p_defineword,0},
     { "DW",p_definelong,0},{"DC.L",p_definelong,0},
+    { "DP",p_definephrase,0},{"DC.P",p_definephrase,0},
     { "DS.B",p_definespace,1},{"DS",p_definespace,1},
     { "DS.W",p_definespace,2},
     { "DS.L",p_definespace,4},
+    { "DS.P",p_definespace,8},
     { "INCLUDE",p_include,0},
     { "ISYMS",p_isyms,0},
     { "TRANS",p_trans,0},

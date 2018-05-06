@@ -41,7 +41,7 @@ typedef struct {
 
 struct reference_s{
   REFERENCE *up,*down;
-  int pc;
+  uint32_t pc;
   int line;
   int file;
   int macroline;
@@ -78,8 +78,8 @@ struct macro_s{
 
 
 EXTERN struct global_s{
-  long pc;            // program-counter
-  long OldPC;         // dito, but before parsing
+  uint32_t pc;            // program-counter
+  uint32_t OldPC;         // dito, but before parsing
   int Lines;         // all assembled Lines
   int Files;         // all included files
   int run;           // != 0 => dest. address
@@ -144,7 +144,7 @@ EXTERN char * bll_root;
 EXTERN char * bjl_root;
 EXTERN int chgPathToUpper;
 
-EXTERN long *p_cycles;
+EXTERN uint32_t *p_cycles;
 #define CYCLES (*p_cycles)
 
 extern char macrovars[16][16][80];

@@ -309,7 +309,7 @@ label_t * DefineLabel(label_t *l, int *solved)
 //---------------------------------------------------------------------
 // FindLabel
 //---------------------------------------------------------------------
-label_t * FindLabel(label_t *l, long *value)
+label_t * FindLabel(label_t *l, int32_t *value)
 {
   label_t *next;
 
@@ -378,8 +378,9 @@ void DumpGlobals()
   for (i = 0; i < 256; ++i){
     for( next = hash[i] ; next ; next = next->next ){
       if ( !(next->type & UNSOLVED) && (next->type & GLOBAL)){
-	fprintf(my_stderr,"<%32s> = %04lx %02x [%5d %s]\n",
-		next->name,next->value,next->type,next->line,file_list[next->file].name);
+	fprintf(my_stderr,"<%32s> = %04x %02x [%5d %s]\n",
+		next->name,next->value,next->type,
+                next->line,file_list[next->file].name);
       }
     }
   }
@@ -409,7 +410,7 @@ void writeSymbols(char *fn)
   for (i = 0; i < 256; ++i){
     for( next = hash[i] ; next ; next = next->next ){
       if ( !(next->type & UNSOLVED) && (next->type & GLOBAL)){
-	fprintf(fh,"%s\t\tEQU %ld\n",next->name,next->value);
+	fprintf(fh,"%s\t\tEQU %d\n",next->name,next->value);
       }
     }
   }
@@ -436,7 +437,8 @@ void DumpLocals()
   label_t * next = local_labels;
   fprintf(my_stderr,"Local labels:\n");
   for ( ; next ; next = next->next ){
-    fprintf(my_stderr,"<%32s> = %04lx [%5d %s]\n",next->name,next->value,next->line,file_list[next->file].name);
+    fprintf(my_stderr,"<%32s> = %04x [%5d %s]\n",
+            next->name,next->value,next->line,file_list[next->file].name);
   }
 }
 
@@ -445,6 +447,7 @@ void DumpMacros()
   label_t * next = macroname_hook;
   fprintf(my_stderr,"Macros:\n");
   for ( ; next ; next = next->next ){
-    fprintf(my_stderr,"<%32s> [%5d %s]\n",next->name,next->line,file_list[next->file].name);
+    fprintf(my_stderr,"<%32s> [%5d %s]\n",
+            next->name,next->line,file_list[next->file].name);
   }
 }

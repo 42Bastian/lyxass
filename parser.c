@@ -137,7 +137,6 @@ int LoadSource(char fn[])
 
 int GetChar()
 {
-
   if ( Current.SrcPtr ){
     ch = *Current.SrcPtr++;
     next_ch = *Current.SrcPtr;
@@ -499,13 +498,13 @@ int GetLabel(label_t *Label)
       } else if ( atom == '$' ){
         label_t label;
         char help[10], *p = help;
-        long l;
+        int32_t l;
 
         GetAtom();
         if ( GetLabel( &label ) ) return 1;
         if ( !FindLabel( &label, &l) ) return 1;
 
-        sprintf(help,"%08lX",l);
+        sprintf(help,"%08X",l);
         while ( *p ){
           *ptr++=*p++;
         }

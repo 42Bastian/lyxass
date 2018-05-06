@@ -33,13 +33,13 @@ int CheckMacro(char *);
 void InitTransASCII(void);
 int mainloop(int );
 
-int uni(long *);
+int uni(int64_t *);
 
 
 extern REFERENCE *refFirst;
 extern REFERENCE *refLast;
 
-char info[] = "tjass/lyxass C-version V 0.49 "__DATE__"\n(c) 1993..2003 42Bastian Schick\n";
+char info[] = "tjass/lyxass C-version V 0.49 " __DATE__ "\n(c) 1993..2003 42Bastian Schick\n";
 
 /********************************************************************/
 char *outfile = 0;
@@ -185,7 +185,7 @@ void writeWordBig(short w)
   Global.pc+=2;
 }
 
-void writeLongLittle(long l)
+void writeLongLittle(int32_t l)
 {
   if (Global.genesis >0 ){
     if ( code.Size + 4 > MAX_CODE_SIZE ){
@@ -202,7 +202,7 @@ void writeLongLittle(long l)
   Global.pc+=4;
 }
 
-void writeLongBig(long l)
+void writeLongBig(int32_t l)
 {
   if (Global.genesis >0 ){
     if ( code.Size + 4 > MAX_CODE_SIZE ){
@@ -215,6 +215,49 @@ void writeLongBig(long l)
       *code.Ptr++ = (char) (l >> 8);
       *code.Ptr++ = (char) (l & 0xff);
       code.Size += 4;
+    }
+  }
+  Global.pc+=4;
+}
+
+void writePhraseLittle(int64_t l)
+{
+  if (Global.genesis >0 ){
+    if ( code.Size + 4 > MAX_CODE_SIZE ){
+      Error(CODEMEM_ERR,"");
+      Global.genesis = -1;
+    } else {
+      *code.Ptr++ = (char) (l & 0xff);
+      *code.Ptr++ = (char) (l >> 8);
+      *code.Ptr++ = (char) (l >> 16);
+      *code.Ptr++ = (char) (l >> 24);
+      *code.Ptr++ = (char) (l >> 32);
+      *code.Ptr++ = (char) (l >> 40);
+      *code.Ptr++ = (char) (l >> 48);
+      *code.Ptr++ = (char) (l >> 56);
+      code.Size += 8;
+    }
+  }
+  Global.pc+=4;
+}
+
+void writePhraseBig(int64_t l)
+{
+  if (Global.genesis >0 ){
+    if ( code.Size + 4 > MAX_CODE_SIZE ){
+      Error(CODEMEM_ERR,"");
+      Global.genesis = -1;
+
+    } else {
+      *code.Ptr++ = (char) (l >> 56);
+      *code.Ptr++ = (char) (l >> 48);
+      *code.Ptr++ = (char) (l >> 40);
+      *code.Ptr++ = (char) (l >> 32);
+      *code.Ptr++ = (char) (l >> 24);
+      *code.Ptr++ = (char) (l >> 16);
+      *code.Ptr++ = (char) (l >> 8);
+      *code.Ptr++ = (char) (l & 0xff);
+      code.Size += 8;
     }
   }
   Global.pc+=4;
@@ -279,8 +322,8 @@ void help()
 	 "run                    - set pc, first run sets start address and\n"
 	 "                         enables code-generation\n"
 	 "end                    - take a guess !\n"
-         "dc.b / dc.w / dc.l     - define data, dc.b allows strings,\n"
-         "                         w and l only of 2 resp. 4 bytes\n"
+         "dc.b/dc.w/dc.l/dc.p    - define data, dc.b allows strings,\n"
+         "                         w, l and only of 2,4 or 8 bytes\n"
          "dc.a                   - like dc.b only bytes are translated before storing\n"
          "ds.b / ds.w / ds.l     - reserve space in chunks of 1,2 or 4 bytes\n"
          "inc@/dec@              - increase/decrease @-var\n"
@@ -374,9 +417,9 @@ void CommandLine(int *_argc, char **_argv)
 	label.value = 1;
 	label.type = NORMAL;
 	if ( TestAtom('=') ){
-	  long l;
-	  if ( uni(&l ) ) Error(CMD_ERR,"");
-	  label.value = l;
+	  int64_t l;
+	  if ( uni(&l) ) Error(CMD_ERR,"");
+	  label.value = (int32_t)l;
 	}
 	DefineLabel(&label, &solved);
       }
@@ -449,7 +492,7 @@ int main(int argc, char **argv)
     label_t * l;
     l=DefineLabel(&_cycles, &solved);
     l->type |= VARIABLE;
-    p_cycles = &l->value;
+    p_cycles = (uint32_t *)&l->value;
   }
 
   /*

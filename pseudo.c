@@ -11,6 +11,7 @@
 #endif
 #include <string.h>
 #include <ctype.h>
+#include <inttypes.h>
 
 #include "my.h"
 #include "error.h"
@@ -29,15 +30,20 @@ extern void writeBytes(char *, int);
 extern void writeSameBytes(char , int );
 extern void writeWordLittle(short );
 extern void writeWordBig(short );
-extern void writeLongLittle(long );
-extern void writeLongBig(long );
+extern void writeLongLittle(int32_t );
+extern void writeLongBig(int32_t );
+extern void writePhraseLittle(int64_t );
+extern void writePhraseBig(int64_t );
 extern int LoadFile(char *, long , long , char *, long *);
 
 
 extern void saveCurrentLine();
 
-int Expression( long * value);
-int NeedConst( long * value, const char * op);
+int Expression( int32_t * value);
+int NeedConst( int32_t * value, const char * op);
+
+int Expression64( int64_t * value);
+int NeedConst64( int64_t * value, const char * op);
 
 // keep track if a register is used
 
@@ -66,7 +72,7 @@ void InitTransASCII(void)
 */
 int p_org(int d)
 {
-  long l;
+  int32_t l;
   int err;
 
   if ( (err = NeedConst( &l, "ORG" )) ) return err;
@@ -88,7 +94,7 @@ int p_org(int d)
 int p_run(int d)
 {
   int err;
-  long l;
+  int32_t l;
 
   KillSpace();
   if ( !atom ) {
@@ -122,7 +128,7 @@ int p_end(int d)
 */
 int p_setvar(int d)
 {
-  long l;
+  int32_t l;
   int err;
 
   if ( (err = NeedConst( &l, "SET@" )) ) return err;
@@ -184,7 +190,7 @@ int p_definebyte(int d)
 {
   char help[80];
   int err;
-  long l;
+  int32_t l;
   int all_err = 0;
 
   KillSpace();
@@ -217,7 +223,7 @@ int p_definebyte(int d)
 int p_defineword(int d)
 {
   int err;
-  long l;
+  int32_t l;
   int all_err = 0;
 
   KillSpace();
@@ -244,7 +250,7 @@ int p_defineword(int d)
 int p_definelong(int d)
 {
   int err;
-  long l;
+  int32_t l;
   int all_err = 0;
 
   KillSpace();
@@ -253,9 +259,35 @@ int p_definelong(int d)
     if ( (err = Expression( &l )) == EXPR_ERROR ) return 1;
     if ( err == EXPR_UNSOLVED ) ++all_err;
     if ( Endian() == targetLITTLE_ENDIAN ){
-      writeLongLittle( l );
+      writeLongLittle( (long)l );
     }else{
-      writeLongBig( l );
+      writeLongBig( (long)l );
+    }
+  } while ( TestAtom(',') );
+
+  if ( all_err ) saveCurrentLine();
+  return 0;
+}
+/*
+
+  DC.P,DP
+
+*/
+int p_definephrase(int d)
+{
+  int err;
+  int64_t ll;
+  int all_err = 0;
+
+  KillSpace();
+  if ( atom == EOF ) return Error(SYNTAX_ERR,"");
+  do{
+    if ( (err = Expression64( &ll )) == EXPR_ERROR ) return 1;
+    if ( err == EXPR_UNSOLVED ) ++all_err;
+    if ( Endian() == targetLITTLE_ENDIAN ){
+      writePhraseLittle( ll );
+    }else{
+      writePhraseBig( ll );
     }
   } while ( TestAtom(',') );
 
@@ -270,7 +302,7 @@ int p_definelong(int d)
 int p_trans(int d)
 {
   long len;
-  long offset = 0;
+  int32_t offset = 0;
 
   if ( GetFileName() ) return 1;
 
@@ -321,7 +353,7 @@ int p_include(int d)
 */
 int p_ibytes(int d)
 {
-  long offset = 0;
+  int32_t offset = 0;
 
   if ( GetFileName() ) return 1;
 
@@ -332,7 +364,7 @@ int p_ibytes(int d)
   if ( Global.genesis ){
     long len;
 
-    if ( LoadFile(code.Ptr, offset, MAX_CODE_SIZE-code.Size, filename, &len ) ) return 1;
+    if ( LoadFile(code.Ptr, (long)offset, MAX_CODE_SIZE-code.Size, filename, &len ) ) return 1;
 
     code.Ptr += len;
     Global.pc += len;
@@ -385,7 +417,7 @@ int p_path(int d)
 */
 int p_definespace(int size)
 {
-  long l;
+  int32_t l;
 
   if ( NeedConst( &l ,"DS.x") ) return 1;
 
@@ -399,7 +431,7 @@ int p_definespace(int size)
 */
 int p_equ(int d)
 {
-  long l;
+  int32_t l;
 
   if ( NeedConst( &l, "EQU") ) return 1;
 
@@ -418,7 +450,7 @@ int p_equ(int d)
 */
 int p_set(int d)
 {
-  long l;
+  int32_t l;
 
   if ( NeedConst( &l, "SET") ) return 1;
 
@@ -441,7 +473,7 @@ int p_set(int d)
 
 int p_if(int d)
 {
-  long l;
+  int32_t l;
 
   if ( Current.ifCnt+1 == MAX_IF ) return Error(TOOMANYIF_ERR,"");
 
@@ -467,7 +499,7 @@ int p_if(int d)
 */
 int p_ifdef(int d)
 {
-  long l;
+  int32_t l;
   label_t test;
 
   if ( Current.ifCnt+1 == MAX_IF ) return Error(TOOMANYIF_ERR,"");
@@ -493,7 +525,7 @@ int p_ifdef(int d)
 */
 int p_ifundef(int d)
 {
-  long l;
+  int32_t l;
   label_t test;
 
   if ( Current.ifCnt+1 == MAX_IF ) return Error(TOOMANYIF_ERR,"");
@@ -566,7 +598,7 @@ int p_endif(int d)
 */
 int p_switch(int d)
 {
-  long l;
+  int32_t l;
 
   if ( Current.switchCnt ) return Error(SWITCH_ERR,"");
 
@@ -585,7 +617,7 @@ int p_switch(int d)
 */
 int p_case(int d)
 {
-  long l;
+  int32_t l;
 
   if ( !Current.switchCnt ) return Error(CASE_ERR,"");
 
@@ -635,7 +667,7 @@ int p_ends(int d)
 */
 int p_align(int d)
 {
-  long l1,l;
+  int32_t l1,l;
   if ( !(l = d) ){
     l = 2;
     KillSpace();
@@ -643,7 +675,7 @@ int p_align(int d)
       if ( NeedConst( &l,"ALIGN") ) return 1;
     }
   }
-  l1 = l - ((long)Global.pc) % l;
+  l1 = l - ((int32_t)Global.pc) % l;
   if ( l != l1 ) writeSameBytes( 0, l1);
 
   return 0;
@@ -658,7 +690,7 @@ extern FILE *my_stderr;
 int p_echo(int d)
 {
   label_t label;
-  long l;
+  int32_t l;
 
   if ( !TestAtom('"') ) return Error(SYNTAX_ERR,"");
 
@@ -687,10 +719,10 @@ int p_echo(int d)
       FindLabel( &label, &l );
 
       if ( mode == 1  ){
-	fprintf(my_stderr,"$%lX",l);
+	fprintf(my_stderr,"$%x",l);
       }
       else if ( mode == 2 ){
-	fprintf(my_stderr,"%ld",l);
+	fprintf(my_stderr,"%d",l);
       }
     }
     else {
@@ -712,7 +744,7 @@ int p_echo(int d)
 */
 int p_rept(int d)
 {
-  long l;
+  int32_t l;
 
   if ( Current.rept ) return Error(REPT1_ERR,"");
 
@@ -749,7 +781,7 @@ extern int verbose;
 
 int p_list(int d)
 {
-  long l;
+  int32_t l;
   if ( NeedConst( &l , "LIST" ) ) return 1;
 
   if ( l <= 0 ) l = 0;
@@ -776,7 +808,7 @@ int p_global(int d)
 {
   label_t label;
   label_t *plabel;
-  long l;
+  int32_t l;
 
   do{
 
@@ -809,11 +841,11 @@ int p_mode(int modus)
   return 0;
 }
 
-extern int getdec(long *);
+extern int getdec32(int32_t *);
 
 int p_reg(int d)
 {
-  long l;
+  int32_t l;
   int i,o;
 
   if ( sourceMode == LYNX ) return Error(SYNTAX_ERR,"");
@@ -821,7 +853,7 @@ int p_reg(int d)
   if ( ! Current.Label.len ) Error(SYNTAX_ERR,"");
 
   if ( TestAtomOR('r','R') ){
-    if ( getdec( &l ) == EXPR_ERR ) return Error(SYNTAX_ERR,"");
+    if ( getdec32( &l ) == EXPR_ERR ) return Error(SYNTAX_ERR,"");
     if ( l > 31 ) return Error(SYNTAX_ERR,"");
   } else {
     if ( NeedConst( &l, "REG") ) return 1;
@@ -863,7 +895,7 @@ int p_unreg(int d)
 {
   label_t label;
   label_t *plabel;
-  long l;
+  int32_t l;
 
   do{
     if ( GetLabel( &label ) ) return 1;
