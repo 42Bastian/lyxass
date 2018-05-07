@@ -155,7 +155,7 @@ int Error(int err_num,const char *s)
     fprintf(my_stderr,"ENDR without REPT !\n");
     break;
   case ISYMS_ERR:
-    fprintf(my_stderr,"ISYMS not supported !\n");
+    fprintf(my_stderr,"ISYMS only supported in the original Atari version!\n");
     break;
   case CMD_ERR:
     fprintf(my_stderr,"Error in command-line !\n");

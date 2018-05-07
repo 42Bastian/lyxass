@@ -12,26 +12,22 @@
 #include "label.h"
 #include "global_vars.h"
 #include "parser.h"
-
+#include "output.h"
+#include "opcode.h"
 #include "mnemonics.h"
 #include "jaguar.h"
 
-int Expression(int32_t *);
-
+// ref.c
 void saveCurrentLine();
-
-extern void writeByte(char );
-extern void writeConstByte(char );
-extern void writeRelocByte(char ,int);
-extern void writeWordLittle(short );
 
 // this must be provided by any mnemonic.c file
 int Endian(void)
 {
-  if ( sourceMode == LYNX )
+  if ( sourceMode == LYNX ){
     return targetLITTLE_ENDIAN;
-  else
+  } else {
     return targetBIG_ENDIAN;
+  }
 }
 
 // one-byte commands

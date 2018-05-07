@@ -18,38 +18,31 @@
 #include "label.h"
 #include "global_vars.h"
 #include "parser.h"
-
-extern int Endian(void);  // mnemonic.c
-extern void ClearLocals();     // label.c
-extern int mainloop(int );// lyxass.c
-
+#include "output.h"
 #include "pseudo.h"
 
-extern void writeByte(char );
-extern void writeBytes(char *, int);
-extern void writeSameBytes(char , int );
-extern void writeWordLittle(short );
-extern void writeWordBig(short );
-extern void writeLongLittle(int32_t );
-extern void writeLongBig(int32_t );
-extern void writePhraseLittle(int64_t );
-extern void writePhraseBig(int64_t );
-extern int LoadFile(char *, long , long , char *, long *);
+// mnemonic.c
+int Endian(void);
 
+// lyxass.c
+int mainloop(int );
+int LoadFile(char *, long , long , char *, long *);
 
-extern void saveCurrentLine();
+// ref.c
+void saveCurrentLine();
 
-int Expression( int32_t * value);
-int NeedConst( int32_t * value, const char * op);
+// macro.c
+int DefineMacro(char *);
+int EndDefineMacro();
 
-int Expression64( int64_t * value);
-int NeedConst64( int64_t * value, const char * op);
+extern FILE *my_stderr;
+extern int verbose;
 
 // keep track if a register is used
+static int reg_flag[32*2];
+static char transASCII[256];
 
-int reg_flag[32*2];
 int mac_mode = 0;
-char transASCII[256];
 
 void translate(char * s)
 {
@@ -62,8 +55,9 @@ void translate(char * s)
 void InitTransASCII(void)
 {
   int i;
-  for ( i = 255; i >= 0; --i)
+  for ( i = 255; i >= 0; --i){
     transASCII[i] = (char)i;
+  }
 }
 /*
 
@@ -153,7 +147,7 @@ int p_incvar(int d)
   MACRO
 
 */
-extern int DefineMacro(char *);
+
 
 int p_macro(int d)
 {
@@ -171,7 +165,6 @@ int p_macro(int d)
   ENDM
 
 */
-extern int EndDefineMacro();  // macro.c
 int p_endm(int d)
 {
   if ( Current.Macro.Define ){
@@ -319,8 +312,6 @@ int p_trans(int d)
   INCLUDE
 
 */
-extern int LoadSource(char *);
-
 int p_include(int d)
 {
   int err;
@@ -685,8 +676,6 @@ int p_align(int d)
   ECHO / FAIL
 
 */
-extern FILE *my_stderr;
-
 int p_echo(int d)
 {
   label_t label;
@@ -777,8 +766,6 @@ int p_endr(int d)
   LIST
 
 */
-extern int verbose;
-
 int p_list(int d)
 {
   int32_t l;
@@ -840,8 +827,6 @@ int p_mode(int modus)
   //  printf("Switching to mode %d\n",modus);
   return 0;
 }
-
-extern int getdec32(int32_t *);
 
 int p_reg(int d)
 {

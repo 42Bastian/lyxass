@@ -17,7 +17,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <inttypes.h>
 
 #include "my.h"
 #include "label.h"
@@ -39,7 +39,9 @@ int uni(int64_t *);
 extern REFERENCE *refFirst;
 extern REFERENCE *refLast;
 
-char info[] = "tjass/lyxass C-version V 0.49 " __DATE__ "\n(c) 1993..2003 42Bastian Schick\n";
+char info[] =
+  "tjass/lyxass C-version V 1.0 " __DATE__ "\n"
+  "(c) 1993..2003/2018 42Bastian Schick\n";
 
 /********************************************************************/
 char *outfile = 0;
@@ -316,40 +318,42 @@ void help()
 {
   printf("%s\n%s",info,
          "-------------- pseudo-opcodes\n"
-	 "                         Pseudos are case-insensitive !\n"
-         "lynx,gpu,dsp           - switch to lynx,gpu or dsp mode\n"
-	 "org                    - set pc\n"
-	 "run                    - set pc, first run sets start address and\n"
-	 "                         enables code-generation\n"
-	 "end                    - take a guess !\n"
-         "dc.b/dc.w/dc.l/dc.p    - define data, dc.b allows strings,\n"
-         "                         w, l and only of 2,4 or 8 bytes\n"
-         "dc.a                   - like dc.b only bytes are translated before storing\n"
-         "ds.b / ds.w / ds.l     - reserve space in chunks of 1,2 or 4 bytes\n"
-         "inc@/dec@              - increase/decrease @-var\n"
-	 "set@                   - set @-var\n"
+	 "                          Pseudos are case-insensitive !\n"
+         "lynx,gpu,dsp            - switch to lynx,gpu or dsp mode\n"
+	 "org                     - set pc\n"
+	 "run                     - set pc, first run sets start address and\n"
+	 "                          enables code-generation\n"
+	 "end                     - take a guess !\n"
+         "dc.b/dc.w/dc.l/dc.p     - define data, dc.b allows strings,\n"
+         "                          w, l and only of 2,4 or 8 bytes\n"
+         "dc.a                    - like dc.b only bytes are translated\n"
+         "                          before storing\n"
+         "ds.b / ds.w / ds.l      - reserve space in chunks of 1,2 or 4 bytes\n"
+         "inc@/dec@               - increase/decrease @-var\n"
+	 "set@                    - set @-var\n"
 	 "(these commands need a leading SPACE !)\n"
-	 "set                    - redefine a label\n"
-	 "equ                    - define a constant label\n"
-	 "macro / endm           - define a macro\n"
-	 "path  [\"path\"]         - add \"path\" to the internal path,\n"
+	 "set                     - redefine a label\n"
+	 "equ                     - define a constant label\n"
+	 "macro / endm            - define a macro\n"
+	 "path  [\"path\"]        - add \"path\" to the internal path,\n"
 	 "                          empty clears it\n"
-	 "trans \"filename\",off   - load a dc.a translation table\n"
-	 "ibytes \"filename\",off  - load a binary\n"
-	 "include \"filename\"     - include source-file\n"
-	 "if expression          - condional assembly\n"
-	 "ifd label              - label defined ?\n"
-	 "ifnd label             - label not defined ?\n"
+	 "trans \"filename\",off  - load a dc.a translation table\n"
+	 "ibytes \"filename\",off - load a binary\n"
+         "incbin \"filename\",off - load a binary\n"
+	 "include \"filename\"    - include source-file\n"
+	 "if expression           - condional assembly\n"
+	 "ifd label               - label defined ?\n"
+	 "ifnd label              - label not defined ?\n"
 	 "ifvar \\x               - macro var \\x given ?\n"
-	 "else / endif           - more than one ELSE is allowed \n"
-	 "switch expression      - conditional assembly\n"
-	 "case expression        - \n"
-	 "ends                   - \n"
-	 "align expression       - align PC to expression\n"
-	 "rept expression        - repeat following source\n"
-	 "endr                   -\n"
-	 "list expression        - set verbose (1 normal , 2 macros)\n"
-	 "global label[,label    - define label as global\n"
+	 "else / endif            - more than one ELSE is allowed \n"
+	 "switch expression       - conditional assembly\n"
+	 "case expression         - \n"
+	 "ends                    - \n"
+	 "align expression        - align PC to expression\n"
+	 "rept expression         - repeat following source\n"
+	 "endr                    -\n"
+	 "list expression         - set verbose (1 normal , 2 macros)\n"
+	 "global label[,label     - define label as global\n"
 	 "echo \"%%Dlabel %%Hlabel\" - print text and label-values \n"
          "                        %%D as decimal %%H as hex\n"
 	 "-------------- labels\n"
@@ -459,7 +463,10 @@ void CommandLine(int *_argc, char **_argv)
 
 }
 
-struct label_s _cycles = { 6,NORMAL,0,0,0,0,(label_t *)0,(label_t *)0,"CYCLES" };
+struct label_s _cycles = {
+  6,NORMAL,0,0,0,0,(label_t *)0,
+  (label_t *)0,"CYCLES"
+};
 
 int main(int argc, char **argv)
 {
@@ -738,7 +745,7 @@ int mainloop(int pass2){
 
     if ( !Current.pass2 && Current.ifFlag && Current.switchFlag && verbose){
       if ( verbose > 2 || (!Current.Macro.Processing && verbose > 1) )
-	printf("%4d:$%04lx: <%s>\n",Current.Line,Global.pc,srcLine);
+	printf("%4d:$%04"PRIx32": <%s>\n",Current.Line,Global.pc,srcLine);
     }
 
     if ( !atom ) continue;

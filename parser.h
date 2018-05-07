@@ -3,7 +3,8 @@
   parser.h
 
 */
-
+#ifndef _PARSER_H_
+#define _PARSER_H_
 
 
 extern int atom;
@@ -28,6 +29,13 @@ int GetComment(void);
 int CheckForComma(void);
 int GetString( char * ,char );
 int GetFileName();
-
 void InitParser();
 
+/* expression.c */
+int Expression( int32_t * value);
+int NeedConst( int32_t * value, const char * op);
+int Expression64( int64_t * value);
+int NeedConst64( int64_t * value, const char * op);
+int getdec32(int32_t *);
+
+#endif /* _PARSER_H_ */

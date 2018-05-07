@@ -1,3 +1,5 @@
+#ifndef _LABLE_H_
+#define _LABLE_H_
 #define MAX_LABEL_LEN  32
 #define MAX_LOCAL_LABELS  512
 #define MAX_MACRO_LABELS  512
@@ -37,3 +39,5 @@ void DumpGlobals();
 void DumpLocals();
 void InitLabels();
 void writeSymbols(char *);
+void ClearLocals();
+#endif /* _LABLE_H_ */

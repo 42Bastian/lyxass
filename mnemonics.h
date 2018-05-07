@@ -4,8 +4,6 @@
  *
  */
 
-#include "opcode.h"
- 
 /*****************/
 /* address-modes */
 /*****************/
@@ -139,8 +137,7 @@ const struct opcode_s OpCodes[] = {
   {"TYA" ,op0,0x98},
   {"\0" ,0,0}
   };
-  
+
 /*****/
 /*EOF*/
 /*****/
-

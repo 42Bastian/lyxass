@@ -4,7 +4,6 @@
  *
  */
 
-//#include "opcode.h"
 int direct(int );
 int one_reg(int );
 int two_reg(int );
