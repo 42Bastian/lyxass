@@ -435,6 +435,8 @@ int Expression(int32_t * pvalue)
   int err;
   int64_t value;
 
+  *pvalue = 0;
+
   err = Expression64(&value);
 
   if ( err != EXPR_OK ){
