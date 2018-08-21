@@ -170,6 +170,7 @@ int op3(int op)
   } else {
     op |= 0x04;
   }
+
   if ( l < 0 || l > 65535 ) Error(WORD_ERR,"");
 
   if ( l > 255 || err == EXPR_UNSOLVED || Current.pass2) {
