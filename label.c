@@ -378,7 +378,7 @@ void DumpGlobals()
   for (i = 0; i < 256; ++i){
     for( next = hash[i] ; next ; next = next->next ){
       if ( !(next->type & UNSOLVED) && (next->type & GLOBAL)){
-	fprintf(my_stderr,"<%32s> = %04x %02x [%5d %s]\n",
+	fprintf(my_stderr,"<%32s> = %08x %02x [%5d %s]\n",
 		next->name,next->value,next->type,
                 next->line,file_list[next->file].name);
       }
@@ -386,7 +386,7 @@ void DumpGlobals()
   }
 }
 
-void writeSymbols(char *fn)
+void writeSymbols(char *fn, int hex)
 {
   label_t * next;
   int i;
@@ -410,7 +410,11 @@ void writeSymbols(char *fn)
   for (i = 0; i < 256; ++i){
     for( next = hash[i] ; next ; next = next->next ){
       if ( !(next->type & UNSOLVED) && (next->type & GLOBAL)){
-	fprintf(fh,"%s\t\tEQU %d\n",next->name,next->value);
+        if ( hex ){
+          fprintf(fh,"%-24s EQU $%08x\n",next->name,next->value);
+        } else {
+          fprintf(fh,"%-24s EQU %d\n",next->name,next->value);
+        }
       }
     }
   }

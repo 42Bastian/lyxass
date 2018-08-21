@@ -38,6 +38,6 @@ int FindMacro(char *, label_t **);
 void DumpGlobals();
 void DumpLocals();
 void InitLabels();
-void writeSymbols(char *);
+void writeSymbols(char *, int hex);
 void ClearLocals();
 #endif /* _LABLE_H_ */

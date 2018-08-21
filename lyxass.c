@@ -40,7 +40,7 @@ extern REFERENCE *refFirst;
 extern REFERENCE *refLast;
 
 char info[] =
-  "tjass/lyxass C-version V 1.0 " __DATE__ "\n"
+  "tjass/lyxass C-version V 1.1 " __DATE__ "\n"
   "(c) 1993..2003/2018 42Bastian Schick\n";
 
 /********************************************************************/
@@ -51,6 +51,7 @@ int verbose = 0;
 int data = 0;
 int dumpGlobals = 0;
 int symbols = 0;      /* write EQU file with global symbols */
+int hexsymbols = 0;
 int error;            /* flag indicating an error to lower sub-routines */
 int cntError = 0;     /* # of errors */
 int cntWarning = 0;   /* # of warning */
@@ -375,7 +376,6 @@ void help()
 void CommandLine(int *_argc, char **_argv)
 {
 
-
   int argc = *_argc;
   char **argv = _argv;
   int c_arg = 0;
@@ -435,6 +435,9 @@ void CommandLine(int *_argc, char **_argv)
       dumpGlobals = 1;
       break;
     case 's':
+      if (argv[0][2] == 'h' ){
+        hexsymbols=1;
+      }
       symbols = 1;
       break;
     default:
@@ -589,7 +592,7 @@ int main(int argc, char **argv)
 	  writeFile(outfile,code.Mem,code.Size);
 	}
 	if ( symbols ){
-	  writeSymbols(outfile);
+	  writeSymbols(outfile, hexsymbols);
 	}
       }else{
 	printf("No RUN statement ! No outputfile generated.\n");
