@@ -96,9 +96,21 @@ int LoadSource(char fn[])
           }
 
           // else, copy anything
-          while ( c && c != ' ' && c != '\t' && c != ';' && c != '"'){
+          while ( c && c != ' ' && c != '\t' &&
+                  c != ';' && c != '"' && c != '/')
+          {
             *ptr++ = c;
             c = *ptrLine++;
+          }
+          /* C++ comment */
+          if ( c == '/' ){
+            if ( *ptrLine == '/' ){
+              *ptr++ = '\n';
+              break;
+            } else {
+              *ptr++ = c;
+              c = *ptrLine++;
+            }
           }
 
           // remove Spaces...
