@@ -122,7 +122,9 @@ int GetRegister(int *reg)
 
   if ( GetLabel(&regL) ) return 1;
 
-  if ( (regL2 = FindLabel(&regL, &solved)) == NULL ) return Error(REG_ERR,"");
+  if ( (regL2 = FindLabel(&regL, &solved)) == NULL ){
+    return Error(REG_ERR,"");
+  }
 
   if (regL2->type != REGISTER ) return 1; //Error(REG_ERR,"");
 
@@ -389,7 +391,7 @@ int cond_rel(int op )
   }
 
   if ( (Global.pc < 0xf03000) && (Global.pc & 3) ){
-    Warning("JUMP not long-aligned ! NOP inserted !");
+    Warning("JR not long-aligned ! NOP inserted !");
     writeWordBig((short)0xe400);
   }
   writeWordBig( op );
@@ -416,7 +418,7 @@ int cond_abs(int op )
   op |= reg << 5;
 
   if ( (Global.pc < 0xf03000) && (Global.pc & 3) ){
-    Warning("JR not long-aligned ! NOP inserted !");
+    Warning("JUMP not long-aligned ! NOP inserted !");
     writeWordBig((short)0xe400);
   }
 
@@ -504,31 +506,47 @@ int store_reg(int op )
 
   if ( GetRegister( &reg1 ) ) return 1;
 
-  if ( !TestAtom(',') || !TestAtom('(') ) return Error(SYNTAX_ERR,"");
+  if ( !TestAtom(',') || !TestAtom('(') ) {
+    return Error(SYNTAX_ERR,"Expecting ',' or '('");
+  }
 
   if ( GetRegister( &reg2 ) ) return 1;
 
   if ( TestAtom(')') ){
     op = 47;
   } else {
-    if ( atom != '+' ) return Error(SYNTAX_ERR,"");
+    if ( atom != '+' ) return Error(SYNTAX_ERR,"Expecting '+'");
     GetAtom();
-    op = 49;
-    if ( (reg2 -= 14) < 0 || reg2 > 1 ) return Error(SYNTAX_ERR,"");
-    op += reg2 +11;
+    op = 60;
+
+    if ( reg2 != 14 && reg2 != 15 ) {
+      return Error(SYNTAX_ERR,"Expecting r14 or r15");
+    }
+
+    op += (reg2 - 14);
+
+    SavePosition();
 
     if ( GetRegister( &reg2 ) ){
       int32_t l;
       int err;
+
+      op -= 11;
+
+      RestorePosition();
+
       if ( (err = Expression( &l )) == EXPR_ERR ) return 1;
+
       if ( err == EXPR_UNSOLVED ) saveCurrentLine();
+
       if ( !mac_mode ){
 	if ( (l & 3) ) return Error(IMM_ERR,"x % 4 != 0");
 	l >>= 2;
       }
       if ( l < 1 || l > 32 ) return Error(IMM_ERR,"4<=x<=128");
+
       reg2 = l == 32 ? 0 : l;
-      op -= 11;
+
     }
     if ( !TestAtom(')')) return Error(SYNTAX_ERR,"");
   }
