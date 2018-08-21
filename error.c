@@ -32,28 +32,30 @@ int Error(int err_num,const char *s)
 
    if (Current.File >= 0){
     if ( Current.Macro.Line ){
-      fprintf(my_stderr,"%s;%d:ERROR:Macro-Line %5d:<%s>\n",
+      fprintf(my_stderr,"ERROR: %s;%d:Macro-Line %5d:<%s>: '%s'\n",
 	      file_list[Current.File].name,Current.Line,
-	      Current.Macro.Line,file_list[Current.Macro.File].name);
-    }else{
-      fprintf(my_stderr,"%s:%5d:ERROR:\n",file_list[Current.File].name,Current.Line);
+	      Current.Macro.Line,file_list[Current.Macro.File].name,
+              srcLine);
+    } else {
+      fprintf(my_stderr,"ERROR: %s:%5d: '%s'\n",
+              file_list[Current.File].name,Current.Line, srcLine);
     }
   }
   switch (err_num) {
   case  INCLUDE_ERR:
-    fprintf(my_stderr,"To many includes !\n");
+    fprintf(my_stderr,"To many includes\n");
     break;
   case FILE_ERR:
-    fprintf(my_stderr,"Can't open file <%s> !\n",s);
+    fprintf(my_stderr,"Can't open file <%s>\n",s);
     break;
   case LABEL_ERR:
-    fprintf(my_stderr,"Wrong character in label !\n");
+    fprintf(my_stderr,"Wrong character in label\n");
     break;
   case MLABEL_ERR:
-    fprintf(my_stderr,"Macro-label outside macro !\n");
+    fprintf(my_stderr,"Macro-label outside macro\n");
     break;
   case NOMEM_ERR:
-    fprintf(my_stderr,"No more memory available !\n");
+    fprintf(my_stderr,"No more memory available\n");
     break;
   case REDEF_ERR:
     fprintf(my_stderr,"Label redefined ! First use here: %5d : <%s>\n",
@@ -72,93 +74,97 @@ int Error(int err_num,const char *s)
 	    ((label_t *)s)->line,file_list[ ((label_t *)s)->file ].name );
     break;
   case TOOMANY_ERR:
-    fprintf(my_stderr,"Global symbol memory exhausted !\n");
+    fprintf(my_stderr,"Global symbol memory exhausted\n");
     break;
   case LTOOMANY_ERR:
-    fprintf(my_stderr,"Local symbol memory exhausted !\n");
+    fprintf(my_stderr,"Local symbol memory exhausted\n");
     break;
   case LMTOOMANY_ERR:
-    fprintf(my_stderr,"Local-macro symbol memory exhausted !\n");
+    fprintf(my_stderr,"Local-macro symbol memory exhausted\n");
     break;
   case MTOOMANY_ERR:
-    fprintf(my_stderr,"Macro-name memory exhausted !\n");
+    fprintf(my_stderr,"Macro-name memory exhausted\n");
     break;
   case UNKNOWN_ERR:
-    fprintf(my_stderr,"Unknown opcode : (%s) !\n",s);
+    fprintf(my_stderr,"Unknown opcode : (%s)\n",s);
     break;
   case TOOBIG_ERR:
-    fprintf(my_stderr,"Constant to big !\n");
+    fprintf(my_stderr,"Constant to big\n");
     break;
   case EXPR_ERR:
-    fprintf(my_stderr,"Error in expression !\n");
+    fprintf(my_stderr,"Error in expression\n");
     break;
   case SYNTAX_ERR:
-    fprintf(my_stderr,"Syntax Error !\n");
+    if ( s ){
+      fprintf(my_stderr,"Syntax Error:%s\n",s);
+    } else {
+      fprintf(my_stderr,"Syntax Error\n");
+    }
     break;
   case NEEDCONST_ERR:
-    fprintf(my_stderr,"%s needs constant expression !\n",s);
+    fprintf(my_stderr,"%s needs constant expression\n",s);
     break;
   case MLABEL2_ERR:
-    fprintf(my_stderr,"Only .\\label allowed inside a macro !\n");
+    fprintf(my_stderr,"Only .\\label allowed inside a macro\n");
     break;
   case CODEMEM_ERR:
-    fprintf(my_stderr,"Code-memory exhausted. Code > %dK !\n",MAX_CODE_SIZE/1024);
+    fprintf(my_stderr,"Code-memory exhausted. Code > %dK\n",MAX_CODE_SIZE/1024);
     break;
   case DISTANCE_ERR:
-    fprintf(my_stderr,"Relative distance to large !\n");
+    fprintf(my_stderr,"Relative distance to large\n");
     break;
   case NOREFMEM_ERR:
-    fprintf(my_stderr,"No more reference-memory !\n");
+    fprintf(my_stderr,"No more reference-memory\n");
     break;
   case GARBAGE_ERR:
-    fprintf(my_stderr,"Garbage at the end of line !\n");
+    fprintf(my_stderr,"Garbage at the end of line\n");
     break;
   case MACRONESTED_ERR:
-    fprintf(my_stderr,"Macro-definition nested to deep (max. 2) !\n");
+    fprintf(my_stderr,"Macro-definition nested to deep (max. 2)\n");
     break;
   case BYTE_ERR:
-    fprintf(my_stderr,"Byte value out of range !\n");
+    fprintf(my_stderr,"Byte value out of range\n");
     break;
   case WORD_ERR:
-    fprintf(my_stderr,"Word value out of range !\n");
+    fprintf(my_stderr,"Word value out of range\n");
     break;
   case TYPE_ERR:
-    fprintf(my_stderr,"Label-type mismatch !\n");
+    fprintf(my_stderr,"Label-type mismatch\n");
     break;
   case UNSOLVED_ERR:
-    fprintf(my_stderr,"Unsolved %s labels !\n",s);
+    fprintf(my_stderr,"Unsolved %s labels\n",s);
     break;
   case TOOMANYIF_ERR:
-    fprintf(my_stderr,"To many nested IF !\n");
+    fprintf(my_stderr,"To many nested IF\n");
     break;
   case ENDIF1_ERR:
-    fprintf(my_stderr,"ENDIF without IF !\n");
+    fprintf(my_stderr,"ENDIF without IF\n");
     break;
   case FAIL_ERR:
     break;
   case SWITCH_ERR:
-    fprintf(my_stderr,"Nested SWITCH !\n");
+    fprintf(my_stderr,"Nested SWITCH\n");
     break;
   case CASE_ERR:
-    fprintf(my_stderr,"CASE without SWITCH !\n");
+    fprintf(my_stderr,"CASE without SWITCH\n");
     break;
   case DEFAULT_ERR:
-    fprintf(my_stderr,"DEFAULT/ELSES without SWITCH !\n");
+    fprintf(my_stderr,"DEFAULT/ELSES without SWITCH\n");
     break;
   case ENDS_ERR:
-    fprintf(my_stderr,"ENDS without SWITCH !\n");
+    fprintf(my_stderr,"ENDS without SWITCH\n");
     break;
   case REPT1_ERR:
-    fprintf(my_stderr,"Nested REPT !\n");
+    fprintf(my_stderr,"Nested REPT\n");
     break;
   case REPT2_ERR:
-    fprintf(my_stderr,"ENDR without REPT !\n");
+    fprintf(my_stderr,"ENDR without REPT\n");
     break;
   case ISYMS_ERR:
     fprintf(my_stderr,"ISYMS only supported in the original Atari version!\n");
     break;
   case CMD_ERR:
-    fprintf(my_stderr,"Error in command-line !\n");
+    fprintf(my_stderr,"Error in command-line\n");
     break;
   case WRITE_ERR:
     fprintf(my_stderr,"Could not write :%s\n",s);
@@ -170,10 +176,14 @@ int Error(int err_num,const char *s)
     fprintf(my_stderr,"Quick immediate value out of range (%s)!\n",s);
     break;
   case REG_ERR:
-    fprintf(my_stderr,"Missing Register !\n");
+    if ( s ) {
+      fprintf(my_stderr,"Missing Register:%s\n",s);
+    } else {
+      fprintf(my_stderr,"Missing Register\n");
+    }
     break;
   case REG1_ERR:
-    fprintf(my_stderr,"Redefining register-symbol !\n");
+    fprintf(my_stderr,"Redefining register-symbol\n");
     break;
   }
 
@@ -192,7 +202,16 @@ int Error(int err_num,const char *s)
 void Warning(const char *s)
 {
   cntWarning++;
-  if (warning && Current.File >= 0)
-    printf("WARNING:%5d(%5d):<%s>:%s\n",Current.Line,Current.Macro.Line,file_list[Current.File].name,s);
-
+  if (warning && Current.File >= 0){
+    if ( Current.Macro.Line ){
+      fprintf(my_stderr,"WARNING: %s;%d:Macro-Line %5d:<%s>: '%s'\n",
+	      file_list[Current.File].name,Current.Line,
+	      Current.Macro.Line,file_list[Current.Macro.File].name,
+              srcLine);
+    } else {
+      fprintf(my_stderr,"WARNING: %s:%5d: '%s'\n",
+              file_list[Current.File].name,Current.Line, srcLine);
+    }
+    printf("%s\n",s);
+  }
 }
