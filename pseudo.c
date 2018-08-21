@@ -40,6 +40,8 @@ extern int verbose;
 
 // keep track if a register is used
 static int reg_flag[32*2];
+static int reg_line[32*2];
+static int reg_file[32*2];
 static char transASCII[256];
 
 int mac_mode = 0;
@@ -822,7 +824,9 @@ int p_mode(int modus)
 {
   sourceMode = modus;
   if ( modus == JAGUAR ){
-    memset((char *)reg_flag,0, 32*sizeof(int) );
+    memset((char *)reg_flag,0, 2*32*sizeof(int) );
+    memset((char *)reg_line,0, 2*32*sizeof(int) );
+    memset((char *)reg_file,0, 2*32*sizeof(int) );
   }
   //  printf("Switching to mode %d\n",modus);
   return 0;
@@ -860,10 +864,17 @@ int p_reg(int d)
     o += 32;
   }
 
-  if ( reg_flag[o] ) Warning("Register already in use !");
+  if ( reg_flag[o] ) {
+    char help[256];
+    sprintf(help,"Register already defined: %s:%5d",
+            file_list[reg_file[o]].name,reg_line[o]);
+
+    Warning(help);
+  }
 
   reg_flag[o] = 1;
-
+  reg_file[o] = Current.File;
+  reg_line[o] = Current.Line;
   Current.LabelPtr->file = Current.File;
   Current.LabelPtr->type = REGISTER;
   Current.LabelPtr->value = l;
@@ -909,6 +920,8 @@ int p_unreg(int d)
 	o += 32;
       }
       reg_flag[o] = 0;
+      reg_line[o] = 0;
+      reg_file[o] = 0;
 
     }
 
