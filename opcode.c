@@ -12,6 +12,7 @@
 #include <stdint.h>
 
 #include "opcode.h"
+#define strcmpi strcasecmp
 
 /* SearchOpcode
 
