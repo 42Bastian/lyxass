@@ -408,7 +408,7 @@ int GetFileName()
   } else {
     strcpy(filename,Global.Path);
   }
-  printf("<%s>\n",help);
+
   i = strlen(filename);
   if ( i && filename[i-1] != '/' && filename[i-1] != '\\'){
     filename[i] = '/';
