@@ -8,9 +8,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-
+#include <inttypes.h>
 #include "my.h"
-#include "label.h"
+
 #include "error.h"
 #include "global_vars.h"
 
@@ -378,9 +378,15 @@ void DumpGlobals()
   for (i = 0; i < 256; ++i){
     for( next = hash[i] ; next ; next = next->next ){
       if ( !(next->type & UNSOLVED) && (next->type & GLOBAL)){
-	fprintf(my_stderr,"<%32s> = %08x %02x [%5d %s]\n",
-		next->name,next->value,next->type,
-                next->line,file_list[next->file].name);
+        if ( Global.mainMode == JAGUAR ){
+          fprintf(my_stderr,"<%32s> = %016"PRIx64" %02x [%5d %s]\n",
+                  next->name, next->value, next->type,
+                  next->line, file_list[next->file].name);
+        } else {
+          fprintf(my_stderr,"<%32s> = %08x %02x [%5d %s]\n",
+                  next->name, (uint32_t)next->value, next->type,
+                  next->line, file_list[next->file].name);
+        }
       }
     }
   }
@@ -410,10 +416,18 @@ void writeSymbols(char *fn, int hex)
   for (i = 0; i < 256; ++i){
     for( next = hash[i] ; next ; next = next->next ){
       if ( !(next->type & UNSOLVED) && (next->type & GLOBAL)){
-        if ( hex ){
-          fprintf(fh,"%-24s EQU $%08x\n",next->name,next->value);
+        if ( Global.mainMode == JAGUAR ){
+          if ( hex ){
+            fprintf(fh,"%-24s EQU $%016"PRIx64"\n",next->name,next->value);
+          } else {
+            fprintf(fh,"%-24s EQU %"PRIi64"\n",next->name,next->value);
+          }
         } else {
-          fprintf(fh,"%-24s EQU %d\n",next->name,next->value);
+          if ( hex ){
+            fprintf(fh,"%-24s EQU $%08x\n",next->name,(uint32_t)next->value);
+          } else {
+            fprintf(fh,"%-24s EQU %d\n",next->name,(uint32_t)next->value);
+          }
         }
       }
     }
@@ -441,8 +455,14 @@ void DumpLocals()
   label_t * next = local_labels;
   fprintf(my_stderr,"Local labels:\n");
   for ( ; next ; next = next->next ){
-    fprintf(my_stderr,"<%32s> = %04x [%5d %s]\n",
-            next->name,next->value,next->line,file_list[next->file].name);
+    if ( Global.mainMode == JAGUAR ){
+      fprintf(my_stderr,"<%32s> = %0"PRIx64" [%5d %s]\n",
+              next->name,next->value,next->line,file_list[next->file].name);
+    } else {
+      fprintf(my_stderr,"<%32s> = %04x [%5d %s]\n",
+              next->name,(uint32_t)next->value,
+              next->line,file_list[next->file].name);
+    }
   }
 }
 
