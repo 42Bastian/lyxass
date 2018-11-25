@@ -11,7 +11,10 @@
 #include <string.h>
 #include <stdint.h>
 
+#include "global_vars.h"
 #include "opcode.h"
+
+extern int sourceMode;
 
 /* SearchOpcode
 
@@ -53,6 +56,9 @@ int SearchOpcode2(const struct opcode_s *list,
     return -1;
   }
 
+  if ( Global.mainMode != JAGUAR && !strcmpi(s,"DP") ){
+    return -1;
+  }
   curr = list;
 
   while ( curr->name[0] ){
