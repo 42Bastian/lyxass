@@ -65,7 +65,8 @@ int LoadSource(char fn[])
       fgets(line,254,f);
       ptrLine = line;
       // remove comment
-      if ( ((c = *ptrLine++) == '*') ||
+      c = *ptrLine++;
+      if ( (c == '*') ||
            (c == ';') ||
            (c == '/' && *ptrLine == '/') )
       {
@@ -86,11 +87,16 @@ int LoadSource(char fn[])
           }
 
           // do not delete Space within strings
-          if ( c == '"' ){
+          if ( /*c== '\'' || c == '<' || */c == '"' ){
+            char end;
+            end = c;
+            if ( c == '<' ){
+              end = '>';
+            }
             do{
               *ptr++=c;
               c = *ptrLine++;
-            }while ( c && c != '"' );
+            }while ( c && c != end );
             *ptr++=c;
             c = *ptrLine++;
           }
@@ -112,13 +118,16 @@ int LoadSource(char fn[])
               c = *ptrLine++;
             }
           }
-
-          // remove Spaces...
-          while ( c == ' ' || c == '\t'){
-            c = *ptrLine++;
+          if ( c == ' ' ||  c == '\t'){
+            // remove Spaces...
+            while ( c == ' ' || c == '\t'){
+              c = *ptrLine++;
+            }
+            // ... leave only one
+            if ( c && c != '\n' ) {
+              *ptr++ = ' ';
+            }
           }
-          // ... leave only one
-          if ( c && c != '\n' ) *ptr++ = ' ';
         }
       } // if ( c == '*' )
     } // while
@@ -399,6 +408,7 @@ int GetFileName()
   } else {
     strcpy(filename,Global.Path);
   }
+  printf("<%s>\n",help);
   i = strlen(filename);
   if ( i && filename[i-1] != '/' && filename[i-1] != '\\'){
     filename[i] = '/';
