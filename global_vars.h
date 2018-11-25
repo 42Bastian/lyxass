@@ -3,6 +3,8 @@
 #ifndef GLOBAL_VARS
 #define GLOBAL_VARS
 
+#include "label.h"
+
 #ifdef MAIN
 #define EXTERN
 #else
