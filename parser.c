@@ -9,7 +9,7 @@
 #include "error.h"
 
 
-#define LOAD_BUFFER_SIZE (128*1024)  // hope this is enough
+#define LOAD_BUFFER_SIZE (1024*1024)  // hope this is enough
 
 extern void ConvertFilename(char *);
 
@@ -201,7 +201,7 @@ char * InsertMacroVar(char *ptr,int var)
 }
 /*
   Copy a line from the source-memory.
-  Insert macor-parameters if needed.
+  Insert macro-parameters if needed.
 */
 int GetLine()
 {
