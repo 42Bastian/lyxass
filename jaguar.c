@@ -10,7 +10,7 @@
 
 //#include "mnemonics.h"
 //#include "jaguar.h"
-
+#define strcmpi strcasecmp
 int Expression(int32_t *);
 
 void saveCurrentLine();

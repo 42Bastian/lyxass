@@ -13,6 +13,7 @@
 
 #include "global_vars.h"
 #include "opcode.h"
+#define strcmpi strcasecmp
 
 extern int sourceMode;
 

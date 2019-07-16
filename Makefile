@@ -1,4 +1,4 @@
-CC=mingw32-gcc
+CC=gcc
 
 CFLAGS=  -Wall -O2 -fomit-frame-pointer
 LDFLAGS= -s
