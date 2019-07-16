@@ -194,7 +194,7 @@ int p_definebyte(int d)
     if ( TestAtom('"') ){
       if ( !GetString( help ,'"' ) ) return Error(SYNTAX_ERR,"");
       if ( d ){
-	translate(help);
+        translate(help);
       }
       writeBytes(help,strlen(help));
     }
@@ -693,15 +693,15 @@ int p_echo(int d)
 
       GetAtom();
       if ( atom == 'H' || atom == 'h' || atom == 'X' || atom == 'x'){
-	mode = 1;
-	l = 0xdead;
+        mode = 1;
+        l = 0xdead;
       }
       else if ( atom == 'D' || atom == 'd' ){
-	mode = 2;
-	l = 12345678;
+        mode = 2;
+        l = 12345678;
       }
       else {
-	return Error(SYNTAX_ERR,"");
+        return Error(SYNTAX_ERR,"");
       }
       GetAtom();
 
@@ -710,10 +710,10 @@ int p_echo(int d)
       FindLabel( &label, &l );
 
       if ( mode == 1  ){
-	fprintf(my_stderr,"$%x",l);
+        fprintf(my_stderr,"$%x",l);
       }
       else if ( mode == 2 ){
-	fprintf(my_stderr,"%d",l);
+        fprintf(my_stderr,"%d",l);
       }
     }
     else {
@@ -906,18 +906,18 @@ int p_unreg(int d)
       if ( !(plabel->type & REGISTER) ) return Error(SYNTAX_ERR,"");
 
       if ( plabel->file == -1 ){
-	char help[80];
-	sprintf(help,"Multiple UNREG on (%s)!",plabel->name);
-	Warning(help);
+        char help[80];
+        sprintf(help,"Multiple UNREG on (%s)!",plabel->name);
+        Warning(help);
       }
 
       plabel->file = -1;
       o = l;
       i = strlen(plabel->name);
       if ( i > 2 &&
-	   plabel->name[i-2] == '.' &&
-	   plabel->name[i-1] == 'a'){
-	o += 32;
+           plabel->name[i-2] == '.' &&
+           plabel->name[i-1] == 'a'){
+        o += 32;
       }
       reg_flag[o] = 0;
       reg_line[o] = 0;
@@ -954,7 +954,7 @@ int CheckPseudo(char *s)
   if ( !Current.ifFlag ){
     if ( ((fun == p_if) || (fun == p_ifdef) ||
           (fun == p_ifundef) || (fun == p_ifvar)) ||
-	 ((fun == p_else) || (fun == p_endif)) )
+         ((fun == p_else) || (fun == p_endif)) )
     {
       return fun(para);
     }

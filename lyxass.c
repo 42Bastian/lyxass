@@ -467,7 +467,7 @@ void CommandLine(int *_argc, char **_argv)
 }
 
 struct label_s _cycles = {
-  6,NORMAL,0,0,0,0,(label_t *)0,
+  6,NORMAL,0,0,0,0,NULL,(label_t *)0,
   (label_t *)0,"CYCLES"
 };
 
@@ -521,7 +521,8 @@ int main(int argc, char **argv)
       Error(UNSOLVED_ERR,"\b");
 
       while ( ptr ){
-	printf("<%32s> [%5d %s]\n",ptr->unknown->name,ptr->line+1,file_list[ptr->file].name);
+	printf("<%32s> [%5d %s]\n",ptr->unknown->name,
+               ptr->line+1,file_list[ptr->file].name);
 	ptr1 = ptr;
 	ptr = ptr->up;
 	free(ptr1);
@@ -621,7 +622,8 @@ void CheckForUnsolvedLocals()
 	  Error(UNSOLVED_ERR,"local");
 	  flag=0;
 	}
-	printf("<%32s> [%5d %s]\n",ptr->unknown->name,ptr->line+1,file_list[ptr->file].name);
+	printf("<%32s> [%5d %s]\n",ptr->unknown->name,
+               ptr->line+1,file_list[ptr->file].name);
 	ptr->unknown = 0;
 
 	if ( ptr->down ){
@@ -719,13 +721,8 @@ int checkCode(char * s,int firstCol)
   return err;
 }
 
-int mainloop(int pass2){
-
-  //static int count = 0;
-
-  //printf("Mainloop:%d\n",++count);
-
-
+int mainloop(int pass2)
+{
   Current.ifFlag = 1;
   Current.switchFlag = 1;
 

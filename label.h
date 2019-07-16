@@ -7,10 +7,10 @@
 #define MAX_MACROS        1024
 
 /* label-types */
-#define NORMAL	       0x01   // Label w/ or w/o colon
-#define LOCAL	       0x02   // label starting with dot
-#define MACRO	       0x04   // label starting with dot and backslash
-#define GLOBAL	       0x08   // label starting with double colon
+#define NORMAL         0x01   // Label w/ or w/o colon
+#define LOCAL          0x02   // label starting with dot
+#define MACRO          0x04   // label starting with dot and backslash
+#define GLOBAL         0x08   // label starting with double colon
 #define VARIABLE       0x10   // normal label, can be redefined
 #define UNSURE         0x20   // normal label w/o colon, could be a opcode
 #define REGISTER       0x40   // register label ie. usable instead of a register
@@ -21,10 +21,11 @@
 typedef struct label_s{
   int len;
   int type;
-  int32_t value;
+  int64_t value;
   int line;
   int file;
   int count;
+  char *macro;
   struct label_s *next;
   struct label_s *last;
   char name[MAX_LABEL_LEN+2];
