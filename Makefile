@@ -1,7 +1,7 @@
 CC=gcc
 
 CFLAGS=  -Wall -O2 -fomit-frame-pointer
-LDFLAGS= -s
+LDFLAGS=
 
 all: lyxass
 
@@ -38,7 +38,7 @@ OBJ = $(SRC:.c=.o)
 -include $(SRC:.c=.P)
 
 lyxass: $(OBJ)
-	$(CC) $(LDFLAGS) $+ -o $@
+	$(CC) $(LDFLAGS) $(OBJ) -o $@
 
 
 
