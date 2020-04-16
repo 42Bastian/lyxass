@@ -40,11 +40,11 @@ int ExprFailed;
 
 static label_t expr_label;
 
-#define need_ch()\
-    if ( ! GetAtom() ){\
-      Error(EXPR_ERR,"");\
-      return EXPR_ERR;\
-    }
+#define need_ch()                               \
+  if ( ! GetAtom() ){                           \
+    Error(EXPR_ERR,"");                         \
+    return EXPR_ERR;                            \
+  }
 
 int getdec32(int32_t *value)
 {
@@ -225,23 +225,41 @@ int uni(int64_t *value)
     err = EXPR_OK;
     break;
   case '"':
-    {
-      char help[80];
-      char *ptr = help;
-      int i = 5;
+  {
+    char help[80];
+    char *ptr = help;
+    int i = 5;
 
-      GetAtom();
-      if ( !GetString(help, '"') ){
-	Error(SYNTAX_ERR,"");
-	return EXPR_ERROR;
-      }
-      while ( *ptr && --i){
-	a = (a<<8)| (int)*ptr++;
-      }
-
-      err = EXPR_OK;
+    GetAtom();
+    if ( !GetString(help, '"') ){
+      Error(SYNTAX_ERR, "Missing '\"'" );
+      return EXPR_ERROR;
     }
-    break;
+    while ( *ptr && --i){
+      a = (a<<8)| (int)*ptr++;
+    }
+
+    err = EXPR_OK;
+  }
+  break;
+  case '\'':
+  {
+    char help[80];
+    char *ptr = help;
+    int i = 5;
+
+    GetAtom();
+    if ( !GetString(help, '\'') ){
+      Error(SYNTAX_ERR, "Missing \"'\"");
+      return EXPR_ERROR;
+    }
+    while ( *ptr && --i){
+      a = (a<<8)| (int)*ptr++;
+    }
+
+    err = EXPR_OK;
+  }
+  break;
   case '(':
     GetAtom();
     err = sum( &a );

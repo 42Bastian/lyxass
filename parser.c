@@ -87,7 +87,7 @@ int LoadSource(char fn[])
           }
 
           // do not delete Space within strings
-          if ( /*c== '\'' || c == '<' || */c == '"' ){
+          if ( c== '\'' || c == '<' || c == '"' ){
             char end;
             end = c;
             if ( c == '<' ){
@@ -103,7 +103,7 @@ int LoadSource(char fn[])
 
           // else, copy anything
           while ( c && c != ' ' && c != '\t' &&
-                  c != ';' && c != '"' && c != '/')
+                  c != ';' && c != '"' && c != '/' && c != '\'')
           {
             *ptr++ = c;
             c = *ptrLine++;

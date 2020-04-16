@@ -189,10 +189,17 @@ int p_definebyte(int d)
   int all_err = 0;
 
   KillSpace();
-  if ( atom == EOF ) return Error(SYNTAX_ERR,"");
+  if ( atom == EOF ) return Error(SYNTAX_ERR, "Missing String");
   do{
     if ( TestAtom('"') ){
-      if ( !GetString( help ,'"' ) ) return Error(SYNTAX_ERR,"");
+      if ( !GetString( help ,'"' ) ) return Error(SYNTAX_ERR, "Missing '\"'");
+      if ( d ){
+        translate(help);
+      }
+      writeBytes(help,strlen(help));
+    }
+    else if ( TestAtom('\'') ){
+      if ( !GetString( help ,'\'' ) ) return Error(SYNTAX_ERR, "Missing \"'\"");
       if ( d ){
         translate(help);
       }
@@ -386,7 +393,7 @@ int p_path(int d)
   if ( atom != '"' ) return Error(SYNTAX_ERR,"");
   GetAtom();
 
-  if ( !GetString( filename, '"' ) ) return Error(SYNTAX_ERR,"");
+  if ( !GetString( filename, '"' ) ) return Error(SYNTAX_ERR,"Missing '\"'");
 
   if ( strlen(filename) && filename[(i=strlen(filename))-1] != '/'){
     filename[i] = '/';
@@ -683,7 +690,7 @@ int p_echo(int d)
   label_t label;
   int32_t l;
 
-  if ( !TestAtom('"') ) return Error(SYNTAX_ERR,"");
+  if ( !TestAtom('"') ) return Error(SYNTAX_ERR, __FUNCTION__);
 
   if ( d ) fprintf(my_stderr,"FAIL: ");
 
@@ -701,7 +708,7 @@ int p_echo(int d)
         l = 12345678;
       }
       else {
-        return Error(SYNTAX_ERR,"");
+        return Error(SYNTAX_ERR, __FUNCTION__ );
       }
       GetAtom();
 
