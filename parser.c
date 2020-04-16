@@ -66,68 +66,47 @@ int LoadSource(char fn[])
       ptrLine = line;
       // remove comment
       c = *ptrLine++;
-      if ( (c == '*') ||
-           (c == ';') ||
-           (c == '/' && *ptrLine == '/') )
-      {
+      if (c == '*' )  {
         *ptr++ = '\n';
       } else {
         while ( c ){
-          // convert a CR if found
-          if ( c == '\r' ) c = ' ';
+          // skip CR
+          if ( c == '\r' ) {
+            c = *ptrLine++;
+          }
 
           // comment ? => finished
-          if ( c == ';' ){
-            while ( *(ptr-1) == ' ' ){
+          if ( c == ';' || (c == '/' && *ptrLine == '/') ){
+            if ( *(ptr-1) == ' ' ){
               --ptr;
-              *ptr = 0;
             }
             *ptr++ = '\n';
             break;
           }
 
           // do not delete Space within strings
-          if ( c== '\'' || c == '<' || c == '"' ){
+          if ( c == '\'' || c == '"' ){
             char end;
             end = c;
-            if ( c == '<' ){
-              end = '>';
-            }
             do{
-              *ptr++=c;
-              c = *ptrLine++;
-            }while ( c && c != end );
-            *ptr++=c;
-            c = *ptrLine++;
-          }
-
-          // else, copy anything
-          while ( c && c != ' ' && c != '\t' &&
-                  c != ';' && c != '"' && c != '/' && c != '\'')
-          {
-            *ptr++ = c;
-            c = *ptrLine++;
-          }
-          /* C++ comment */
-          if ( c == '/' ){
-            if ( *ptrLine == '/' ){
-              *ptr++ = '\n';
-              break;
-            } else {
               *ptr++ = c;
               c = *ptrLine++;
-            }
+            }while ( c && c != end );
+            *ptr++ = c;
+            c = *ptrLine++;
+            continue;
           }
-          if ( c == ' ' ||  c == '\t'){
-            // remove Spaces...
-            while ( c == ' ' || c == '\t'){
-              c = *ptrLine++;
-            }
-            // ... leave only one
-            if ( c && c != '\n' ) {
-              *ptr++ = ' ';
-            }
+
+          // collapse white spaces
+          if ( c == '\t' ) {
+            c = ' ';
           }
+          while ( (c == ' ' || c == '\t') &&
+                  (*ptrLine == ' ' || *ptrLine == '\t' ) ) {
+            ++ptrLine;
+          }
+          *ptr++ = c;
+          c = *ptrLine++;
         }
       } // if ( c == '*' )
     } // while
