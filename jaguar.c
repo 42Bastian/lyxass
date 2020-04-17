@@ -79,21 +79,21 @@ int GetRegisterOrPC(int *reg)
 
   if ( regL2->len > 2 ){
     *p++ = 'r';
-    *p++ = regL2->value / 10 + '0';
-    *p++ = regL2->value % 10 + '0';
+    *p++ = (char)(regL2->value / 10 + '0');
+    *p++ = (char)(regL2->value % 10 + '0');
     *p++ = atom;
     memmove(p,srcLinePtr,strlen(srcLinePtr)+1);
   } else {
     memmove(p+4,srcLinePtr,strlen(srcLinePtr)+1);
     *p++ = 'r';
-    *p++ = regL2->value / 10 + '0';
-    *p++ = regL2->value % 10 + '0';
+    *p++ = (char)(regL2->value / 10 + '0');
+    *p++ = (char)(regL2->value % 10 + '0');
     *p++ = atom;
   }
   srcLinePtr = p;
   next_atom = *p;
 
-  *reg = regL2->value;
+  *reg = (int)regL2->value;
 
   return 0;
 }
@@ -130,21 +130,21 @@ int GetRegister(int *reg)
 
   if ( regL2->len > 2 ){
     *p++ = 'r';
-    *p++ = regL2->value / 10 + '0';
-    *p++ = regL2->value % 10 + '0';
+    *p++ = (char)(regL2->value / 10 + '0');
+    *p++ = (char)(regL2->value % 10 + '0');
     *p++ = atom;
     memmove(p,srcLinePtr,strlen(srcLinePtr)+1);
   } else {
     memmove(p+4,srcLinePtr,strlen(srcLinePtr)+1);
     *p++ = 'r';
-    *p++ = regL2->value / 10 + '0';
-    *p++ = regL2->value % 10 + '0';
+    *p++ = (char)(regL2->value / 10 + '0');
+    *p++ = (char)(regL2->value % 10 + '0');
     *p++ = atom;
   }
   srcLinePtr = p;
   next_atom = *p;
 
-  *reg = regL2->value;
+  *reg = (int)regL2->value;
 
   return 0;
 }

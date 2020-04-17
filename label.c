@@ -327,7 +327,7 @@ label_t * FindLabel(label_t *l, int32_t *value)
     //  printf("FindLabel:(%s)%p\n",next->name,next->next);
 
     if ( (l->len == next->len) && !strcmp(l->name,next->name)){
-      *value = next->value;
+      *value = (int32_t)next->value;
       l->type = next->type;
       if ( next->type & UNSOLVED )
 	return 0;
@@ -405,7 +405,7 @@ void writeSymbols(char *fn, int hex)
   ++help;
   *help = 0;
 
-  help = my_malloc(strlen(fn)+4);
+  help = my_malloc((long)strlen(fn)+4UL);
   strcpy(help,fn);
   strcat(help,"equ");
   if ( (fh = fopen(help,"w")) == NULL ){

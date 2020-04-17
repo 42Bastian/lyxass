@@ -46,7 +46,7 @@ int DefineMacro(char *s)
 
   ++recur;
 
-  macroName.len = strlen(s);
+  macroName.len = (int)strlen(s);
   strcpy(macroName.name,s);
   macroName.line = Current.Line;
   macroName.file = Current.File;

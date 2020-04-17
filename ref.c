@@ -22,7 +22,7 @@ void saveCurrentLine()
 {
   REFERENCE *refPtr;
   
-  refPtr = (REFERENCE *)my_malloc(sizeof(REFERENCE) + strlen(srcLine)+1 );
+  refPtr = (REFERENCE *)my_malloc(sizeof(REFERENCE) + (long)strlen(srcLine) + 1UL );
 
   strcpy(refPtr->src,srcLine);
   refPtr->line = Current.Line-1;

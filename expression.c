@@ -53,7 +53,7 @@ int getdec32(int32_t *value)
 
   while ( isdigit(atom) ){
     dec *= 10;
-    dec += atom - '0';
+    dec += (int64_t)atom - '0';
     GetAtom();
     ++i;
   }
@@ -69,7 +69,7 @@ int getdec32(int32_t *value)
     return EXPR_ERROR;
   }
 
-  *value = dec;
+  *value = (int32_t)dec;
   return EXPR_OK;
 }
 
@@ -81,7 +81,7 @@ int getdec(int64_t *value)
 
   while ( isdigit(atom) ){
     dec *= 10;
-    dec += atom - '0';
+    dec += (int64_t)atom - '0';
     GetAtom();
     ++i;
   }
@@ -111,9 +111,9 @@ int gethex(int64_t *value)
 	  (atom >= 'a' && atom <= 'f') ){
     hex <<= 4;
     if ( atom > '9' )
-      hex += ( atom & 0xdf ) - '0' - 7;
+      hex += ( (int64_t)atom & 0xdf ) - '0' - 7;
     else
-      hex += atom - '0';
+      hex += (int64_t)atom - '0';
 
     GetAtom();
     ++i;
@@ -139,7 +139,7 @@ int getbin(int64_t *value)
   int i = 0;
   while ( atom == '1' || atom == '0' ){
     bin <<= 1;
-    bin += (atom - '0');
+    bin += (int64_t)atom - '0';
     GetAtom();
     ++i;
   }

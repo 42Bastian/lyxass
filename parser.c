@@ -121,7 +121,7 @@ int LoadSource(char fn[])
 
     if ( ptr >= ptr_end ) Error(LOAD_ERR,fn);
 
-    Current.SrcPtr = my_malloc( ptr-loadBuffer + 1);
+    Current.SrcPtr = my_malloc( (long)(ptr-loadBuffer + 1));
     memcpy(Current.SrcPtr, loadBuffer, ptr-loadBuffer);
 
     Current.Line = 0;
@@ -388,7 +388,7 @@ int GetFileName()
     strcpy(filename,Global.Path);
   }
 
-  i = strlen(filename);
+  i = (int)strlen(filename);
   if ( i && filename[i-1] != '/' && filename[i-1] != '\\'){
     filename[i] = '/';
   }

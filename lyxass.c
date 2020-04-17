@@ -40,7 +40,7 @@ extern REFERENCE *refFirst;
 extern REFERENCE *refLast;
 
 char info[] =
-  "tjass/lyxass C-version V 1.3 " __DATE__ "\n"
+  "tjass/lyxass C-version V 1.4 " __DATE__ "\n"
   "(c) 1993..2003/2020 42Bastian Schick\n";
 
 /********************************************************************/
@@ -278,7 +278,7 @@ void ConvertFilename(char *fn)
 int LoadFile(char *dst, long offset, long max_len, char *fn, long *len)
 {
   FILE *f;
-  long readlen;
+  size_t readlen;
 
   ConvertFilename(fn);
 
@@ -290,7 +290,7 @@ int LoadFile(char *dst, long offset, long max_len, char *fn, long *len)
 
   readlen = fread(dst,1,max_len,f);
 
-  *len = readlen;
+  *len = (long)readlen;
 
   fclose( f);
 
@@ -393,7 +393,7 @@ void CommandLine(int *_argc, char **_argv)
       --argc;
       ++argv;
       c_arg++;
-      outfile = my_malloc(strlen(*argv));
+      outfile = my_malloc((long)strlen(*argv));
       strcpy(outfile,*argv);
       break;
     case 'v':
@@ -448,7 +448,7 @@ void CommandLine(int *_argc, char **_argv)
 
   if ( !outfile ){
     char *p;
-    outfile = my_malloc(strlen(*argv)+2);
+    outfile = my_malloc((long)strlen(*argv)+2);
     strcpy(outfile,*argv);
     p = outfile+strlen(outfile);
     while ( *p != '.' && p != outfile )
@@ -552,8 +552,8 @@ int main(int argc, char **argv)
 
 	  code.Mem[2] = Global.run >> 8;
 	  code.Mem[3] = Global.run & 0xff;
-	  code.Mem[4] = code.Size >> 8;
-	  code.Mem[5] = code.Size & 0xff;
+	  code.Mem[4] = (char)(code.Size >> 8);
+	  code.Mem[5] = (char)(code.Size & 0xff);
 
 	  code.Mem[6] = 'B';
 	  code.Mem[7] = 'S';

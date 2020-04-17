@@ -74,10 +74,10 @@ int p_org(int d)
   if ( (err = NeedConst( &l, "ORG" )) ) return err;
 
   if ( Global.genesis == 1 && mac_mode == 0){
-    if ( l < Global.pc ) return Error(SYNTAX_ERR,"");
+    if ( (uint32_t)l < Global.pc ) return Error(SYNTAX_ERR,"");
     writeSameBytes( 0, l-Global.pc );
   } else {
-    Global.pc = l;
+    Global.pc = (uint32_t)l;
   }
 
   return 0;
@@ -196,14 +196,14 @@ int p_definebyte(int d)
       if ( d ){
         translate(help);
       }
-      writeBytes(help,strlen(help));
+      writeBytes(help,(int)strlen(help));
     }
     else if ( TestAtom('\'') ){
       if ( !GetString( help ,'\'' ) ) return Error(SYNTAX_ERR, "Missing \"'\"");
       if ( d ){
         translate(help);
       }
-      writeBytes(help,strlen(help));
+      writeBytes(help,(int)strlen(help));
     }
     else {
       if ( (err = Expression( &l )) == EXPR_ERROR ) return 1;
@@ -395,7 +395,8 @@ int p_path(int d)
 
   if ( !GetString( filename, '"' ) ) return Error(SYNTAX_ERR,"Missing '\"'");
 
-  if ( strlen(filename) && filename[(i=strlen(filename))-1] != '/'){
+  i = (int)strlen(filename);
+  if ( i && filename[i-1] != '/'){
     filename[i] = '/';
   }
 
@@ -864,7 +865,7 @@ int p_reg(int d)
        Current.LabelPtr->type != REGISTER ) return Error(SYNTAX_ERR,"");
 
   o = l;
-  i = strlen(Current.LabelPtr->name);
+  i = (int)strlen(Current.LabelPtr->name);
   if ( i > 2 &&
        Current.LabelPtr->name[i-2] == '.' &&
        Current.LabelPtr->name[i-1] == 'a'){
@@ -920,7 +921,7 @@ int p_unreg(int d)
 
       plabel->file = -1;
       o = l;
-      i = strlen(plabel->name);
+      i = (int)strlen(plabel->name);
       if ( i > 2 &&
            plabel->name[i-2] == '.' &&
            plabel->name[i-1] == 'a'){
