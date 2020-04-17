@@ -51,3 +51,9 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+#vs temp/non-important folders
+.vs
+vs/Debug/*
+vs/Release/*
+vs/x64/*

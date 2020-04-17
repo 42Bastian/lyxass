@@ -355,7 +355,7 @@ int GetCondition(int *cond)
   if ( condition.len > 5 )  return Error(SYNTAX_ERR,"");
 
   for( i = 0 ; conditions[i].cond ; ++i ){
-    if ( !strcmpi(conditions[i].ascCond,condition.name) ){
+    if ( !strcasecmp(conditions[i].ascCond,condition.name) ){
       *cond = conditions[i].cond;
       return 0;
     }

@@ -13,7 +13,8 @@
 
 #include "global_vars.h"
 #include "opcode.h"
-#define strcmpi strcasecmp
+#include "my.h"
+
 
 extern int sourceMode;
 
@@ -32,7 +33,7 @@ int SearchOpcode(const struct opcode_s *list, const char *s)
   }
   curr = list;
   while ( curr->name[0] ){
-    if ( !strcmpi(curr->name,s) ){
+    if ( !strcasecmp(curr->name,s) ){
       //      printf("Found (%s)\n",curr->name);
       return curr->func( curr->misc );
     }
@@ -57,13 +58,13 @@ int SearchOpcode2(const struct opcode_s *list,
     return -1;
   }
 
-  if ( Global.mainMode != JAGUAR && !strcmpi(s,"DP") ){
+  if ( Global.mainMode != JAGUAR && !strcasecmp(s,"DP") ){
     return -1;
   }
   curr = list;
 
   while ( curr->name[0] ){
-    if ( !strcmpi(curr->name,s) ){
+    if ( !strcasecmp(curr->name,s) ){
       //      printf("Found (%s)\n",curr->name);
       *fun = curr->func;
       *para = curr->misc;

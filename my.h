@@ -6,3 +6,8 @@
 #define NULL ((void *)0)
 #endif
 #define putch(a)  putc((a),stdout)
+
+#ifdef _MSC_VER 
+#define strncasecmp _strnicmp
+#define strcasecmp _stricmp
+#endif
