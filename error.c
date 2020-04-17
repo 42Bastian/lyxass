@@ -30,7 +30,7 @@ int Error(int err_num,const char *s)
     fprintf(stderr,"Fatal Error %d!\n",-err_num);
   }
 
-   if (Current.File >= 0){
+  if (Current.File >= 0){
     if ( Current.Macro.Line ){
       fprintf(my_stderr,"ERROR: %s;%d:Macro-Line %5d:<%s>: '%s'\n",
 	      file_list[Current.File].name,Current.Line,
@@ -185,9 +185,10 @@ int Error(int err_num,const char *s)
   case REG1_ERR:
     fprintf(my_stderr,"Redefining register-symbol\n");
     break;
+  case MISC_ERR:
+    fprintf(my_stderr,"%s\n",s);
+    break;
   }
-
-
 
   if ( !verbose) verbose=1;
   killLine();
