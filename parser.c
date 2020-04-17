@@ -48,7 +48,9 @@ int LoadSource(char fn[])
 
   ConvertFilename(fn);
 
-  if ( (f = fopen(fn,"r")) != NULL ){
+  f = fopen(fn,"r");
+
+  if ( f != NULL ){
     char * ptr, *ptr_end;
 
     ptr = loadBuffer;
@@ -62,7 +64,9 @@ int LoadSource(char fn[])
       char *ptrLine = line;
 
       memset(line,0,254);
-      fgets(line,254,f);
+      if ( fgets(line,254,f) != line ){
+        Error(-MISC_ERR,"Unexpected EOF");
+      }
       ptrLine = line;
       // remove comment
       c = *ptrLine++;
