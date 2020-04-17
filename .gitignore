@@ -53,7 +53,7 @@ Mkfile.old
 dkms.conf
 
 #vs temp/non-important folders
-.vs/lyxass-vs2019/v16/*
-/vs/Debug/*
-/vs/Release/*
-/vs/x64/*
+.vs
+vs/Debug/*
+vs/Release/*
+vs/x64/*
