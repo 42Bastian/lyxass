@@ -409,7 +409,7 @@ void writeSymbols(char *fn, int hex)
   strcpy(help,fn);
   strcat(help,"equ");
   if ( (fh = fopen(help,"w")) == NULL ){
-    Error(WRITE_ERR,fn);
+    Error(-WRITE_ERR,fn);
     return;
   }
 

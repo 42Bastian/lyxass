@@ -13,9 +13,9 @@ void Warning(const char *);
 #define INCLUDE_ERR	1
 #define FILE_ERR       -2
 #define LABEL_ERR       3
-#define OP_ERR		4
+#define OP_ERR          4
 #define MLABEL_ERR      5
-#define NOMEM_ERR      -6
+#define NOMEM_ERR       6
 #define REDEF_ERR       7
 #define LMREDEF_ERR     8
 #define LREDEF_ERR      9
@@ -32,7 +32,7 @@ void Warning(const char *);
 #define MLABEL2_ERR    20
 #define CODEMEM_ERR    21
 #define DISTANCE_ERR   22
-#define NOREFMEM_ERR  -23
+#define NOREFMEM_ERR   23
 #define GARBAGE_ERR    24
 #define MACRONESTED_ERR 25
 #define BYTE_ERR       26
@@ -48,12 +48,12 @@ void Warning(const char *);
 #define REPT1_ERR      36
 #define REPT2_ERR      37
 #define DEFAULT_ERR    38
-#define ISYMS_ERR     -39
-#define CMD_ERR       -40
-#define WRITE_ERR     -41
-#define LOAD_ERR      -42
+#define ISYMS_ERR      39
+#define CMD_ERR        40
+#define WRITE_ERR      41
+#define LOAD_ERR       42
 // jaguar-errors
 #define IMM_ERR        43
 #define REG_ERR        44
-#define REG1_ERR        45
-#define MISC_ERR   46
+#define REG1_ERR       45
+#define MISC_ERR       46

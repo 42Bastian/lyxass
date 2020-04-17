@@ -22,12 +22,18 @@ extern int warning;
 
 int Error(int err_num,const char *s)
 {
+  int fatal = 0;
+
+  if ( err_num < 0 ){
+    fatal = 1;
+    err_num = -err_num;
+  }
   ++error;
 
   ++cntError;
 
-  if ( err_num < 0 ){
-    fprintf(stderr,"Fatal Error %d!\n",-err_num);
+  if ( fatal ){
+    fprintf(stderr,"Fatal Error %d!\n",err_num);
   }
 
   if (Current.File >= 0){

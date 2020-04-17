@@ -59,13 +59,13 @@ int LoadSource(char fn[])
 
     strcpy(file_list[Global.Files].name,fn);
 
-    while ( ! feof(f)  && ptr <= ptr_end){
+    while ( ! feof(f) && ptr <= ptr_end){
       char c;
       char *ptrLine = line;
 
       memset(line,0,254);
-      if ( fgets(line,254,f) != line ){
-        Error(-MISC_ERR,"Unexpected EOF");
+      if ( fgets(line,254,f) == NULL ){
+        break;
       }
       ptrLine = line;
       // remove comment
@@ -123,7 +123,7 @@ int LoadSource(char fn[])
 
     fclose(f);
 
-    if ( ptr >= ptr_end ) Error(LOAD_ERR,fn);
+    if ( ptr >= ptr_end ) Error(-LOAD_ERR,fn);
 
     Current.SrcPtr = my_malloc( (long)(ptr-loadBuffer + 1));
     memcpy(Current.SrcPtr, loadBuffer, ptr-loadBuffer);
@@ -132,7 +132,7 @@ int LoadSource(char fn[])
 
   } else {
     Global.Files--;
-    return Error(FILE_ERR,fn);
+    return Error(-FILE_ERR,fn);
   }
   return TRUE;
 }

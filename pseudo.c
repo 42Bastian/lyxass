@@ -794,7 +794,7 @@ int p_list(int d)
 */
 int p_isyms(int d)
 {
-  return Error(ISYMS_ERR,"");
+  return Error(-ISYMS_ERR,"ISYMS is no longer supported");
 }
 /*
 

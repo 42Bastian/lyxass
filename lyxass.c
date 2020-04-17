@@ -71,7 +71,7 @@ char * my_malloc(long size)
     totalMemory += size;
     return help;
   } else {
-    Error(NOMEM_ERR,"");
+    Error(-NOMEM_ERR,"");
   }
   return NULL;
 }
@@ -282,7 +282,7 @@ int LoadFile(char *dst, long offset, long max_len, char *fn, long *len)
 
   ConvertFilename(fn);
 
-  if ( (f = fopen(fn,"rb")) == NULL ) return Error(FILE_ERR,fn);
+  if ( (f = fopen(fn,"rb")) == NULL ) return Error(-FILE_ERR,fn);
 
   if ( offset ){
     fseek(f,offset,SEEK_SET);
@@ -417,12 +417,12 @@ void CommandLine(int *_argc, char **_argv)
 
 	atom = ' ';
 
-	if ( GetLabel( &label ) ) Error(CMD_ERR,"");
+	if ( GetLabel( &label ) ) Error(-CMD_ERR,"");
 	label.value = 1;
 	label.type = NORMAL;
 	if ( TestAtom('=') ){
 	  int64_t l;
-	  if ( uni(&l) ) Error(CMD_ERR,"");
+	  if ( uni(&l) ) Error(-CMD_ERR,"");
 	  label.value = (int32_t)l;
 	}
 	DefineLabel(&label, &solved);
@@ -441,10 +441,10 @@ void CommandLine(int *_argc, char **_argv)
       symbols = 1;
       break;
     default:
-      Error(CMD_ERR,"");
+      Error(-CMD_ERR,"");
     }
   }
-  if ( argc != 1 ) Error(CMD_ERR,"");
+  if ( argc != 1 ) Error(-CMD_ERR,"");
 
   if ( !outfile ){
     char *p;
