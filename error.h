@@ -56,3 +56,4 @@ void Warning(const char *);
 #define IMM_ERR        43
 #define REG_ERR        44
 #define REG1_ERR        45
+#define MISC_ERR   46
