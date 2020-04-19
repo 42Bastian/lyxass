@@ -40,8 +40,11 @@ OBJ = $(SRC:.c=.o)
 lyxass: $(OBJ)
 	$(CC) $(LDFLAGS) $(OBJ) -o $@
 
-
-
+.PHONY: pack
+pack:
+	upx --lzma bin/win32/lyxass.exe
+	upx --lzma bin/x64/lyxass.exe
+	upx --lzma bin/cygwin/lyxass.exe
 clean:
 	rm -f .dep
 	rm -f *.o

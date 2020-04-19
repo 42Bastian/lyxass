@@ -325,7 +325,7 @@ void help()
          "-v                      - increase verbosity\n"
          "-d                      - data output (no BLL header)\n"
          "-w                      - enable warnings\n"
-         "-D <label>=<value       - define a symbol\b"
+         "-D <label>=<value       - define a symbol\n"
          "-------------- pseudo-opcodes\n"
 	 "                          Pseudos are case-insensitive !\n"
          "lynx,gpu,dsp            - switch to lynx,gpu or dsp mode\n"
