@@ -330,20 +330,20 @@ int p_include(int d)
   if ( GetFileName() ) return 1;
 
   KillSpace();
-  if ( atom ) return Error(GARBAGE_ERR,"");
+
+  if ( atom ) return Error(GARBAGE_ERR,srcLine);
 
   ClearLocals();
 
-  {
-    struct current_s save_current = Current;
+  struct current_s save_current = Current;
 
-    Global.Files++;
-    LoadSource(filename);
-    Current.File = Global.Files;
-    err = mainloop(0);
+  Global.Files++;
+  LoadSource(filename);
+  Current.File = Global.Files;
+  err = mainloop(0);
 
-    Current = save_current;
-  }
+  Current = save_current;
+
   return err;
 }
 /*

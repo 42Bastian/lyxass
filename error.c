@@ -123,7 +123,7 @@ int Error(int err_num,const char *s)
     fprintf(my_stderr,"No more reference-memory\n");
     break;
   case GARBAGE_ERR:
-    fprintf(my_stderr,"Garbage at the end of line\n");
+    fprintf(my_stderr,"Garbage at the end of line:'%s'\n",s);
     break;
   case MACRONESTED_ERR:
     fprintf(my_stderr,"Macro-definition nested to deep (max. 2)\n");
