@@ -9,6 +9,7 @@
 
 extern int atom;
 extern int next_atom;
+extern int last_atom;
 extern char * srcLinePtr;
 extern char srcLine[256];
 

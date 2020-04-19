@@ -40,7 +40,7 @@ extern REFERENCE *refFirst;
 extern REFERENCE *refLast;
 
 char info[] =
-  "tjass/lyxass C-version V 1.4 " __DATE__ "\n"
+  "tjass/lyxass C-version V 1.5 " __DATE__ "\n"
   "(c) 1993..2003/2020 42Bastian Schick\n";
 
 /********************************************************************/
@@ -313,11 +313,19 @@ int writeFile(char *fn,char *src,long len)
 void usage()
 {
   printf("%s\nUsage:",info);
-  printf("lyxass {\"-\"(o fn|r|v|w|s|d|D label[=value])} infile\n");
+  printf("lyxass [-h|{\"-\"(o fn|r|v|w|s|d|D label[=value])} infile]\n");
 }
 void help()
 {
   printf("%s\n%s",info,
+         "-------------- Commandline option\n"
+         "-h                      - this help\n"
+         "-o <fn>                 - output filename\n"
+         "-s[h]                   - output symbols [in hex]\n"
+         "-v                      - increase verbosity\n"
+         "-d                      - data output (no BLL header)\n"
+         "-w                      - enable warnings\n"
+         "-D <label>=<value       - define a symbol\b"
          "-------------- pseudo-opcodes\n"
 	 "                          Pseudos are case-insensitive !\n"
          "lynx,gpu,dsp            - switch to lynx,gpu or dsp mode\n"
@@ -366,6 +374,7 @@ void help()
 	 " A @ inside a label is replaced by a 4 hexdigits.\n"
 	 " Macro-labels start with \".\\\".\n"
 	 " Macro-names follow the rules for normal labels.\n"
+         " Special label 'CYCLES' counts the opcode cycles and can be set/reset with 'set'\n"
 	 "-------------- macros\n"
 	 "There are no symbolic macro-parameters, but \\0..\\15 are replaced\n"
 	 "by the correponding parameter. Empty parameters are allowed.\n"

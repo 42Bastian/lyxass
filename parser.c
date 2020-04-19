@@ -18,6 +18,7 @@ int next_ch;
 
 int atom;
 int next_atom;
+int last_atom;
 
 char * srcLinePtr;
 char srcLine[256];
@@ -308,6 +309,7 @@ void RestorePosition(void)
 //
 int GetAtom(void)
 {
+  last_atom = atom;
   atom = *srcLinePtr++;
   next_atom = *srcLinePtr;
 

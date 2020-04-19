@@ -91,6 +91,8 @@ int op3(int op)
   int err;
   int32_t l;
   int komma = 0;
+  int saveCYCLES;
+  int saveOp;
 
   if ( ! KillSpace() ){
     return Error(SYNTAX_ERR,"");
@@ -121,6 +123,9 @@ int op3(int op)
 
   // indirect
 
+  SavePosition();
+  saveCYCLES = CYCLES;
+  saveOp = op;
   if ( TestAtom('(') ){
 
     if ( (err = Expression(&l)) == EXPR_ERR) return 1;
@@ -131,7 +136,7 @@ int op3(int op)
       komma = 1;
       CYCLES += 6;
     }
-    if ( !TestAtom(')') ) return Error(SYNTAX_ERR,"");
+    if ( !TestAtom(')') ) return Error(SYNTAX_ERR,"Missing ')'");
 
     if ( !komma ) {
       if ( TestAtom(',') ){
@@ -144,11 +149,19 @@ int op3(int op)
 	CYCLES++;
       }
     }
-    if ( op == 0x91 ) ++CYCLES;
-    writeConstByte(op);
-    writeByte((char)l);
-    if ( err == EXPR_UNSOLVED ) saveCurrentLine();
-    return 0;
+    KillSpace();
+    if ( atom == 0 ){
+      if ( op == 0x91 ) ++CYCLES;
+      writeConstByte(op);
+      writeByte((char)l);
+      if ( err == EXPR_UNSOLVED ) saveCurrentLine();
+      return 0;
+    } else {
+      // Possible not indirect but expression with braces
+      RestorePosition();
+      op = saveOp;
+      CYCLES = saveCYCLES;
+    }
   }
 
   // absolute
@@ -219,8 +232,16 @@ int op5(int op)
 {
   int err;
   int32_t l;
+   int brace;
+
+  KillSpace();
+  brace = atom == '(';
 
   if ( (err = Expression( &l )) == EXPR_ERROR ) return 1;
+  if ( brace && last_atom == ')' ){
+    Warning("STZ (n) translates to STZ n\n");
+  }
+
   if ( l < 0 || l > 65535 ) return Error(WORD_ERR,"");
 
   if ( TestAtom(',') ) {
@@ -258,8 +279,15 @@ int op6(int op)
 {
   int err;
   int32_t l;
+  int brace;
 
+  KillSpace();
+  brace = atom == '(';
   if ( (err = Expression( &l )) == EXPR_ERROR ) return 1;
+  if ( brace && last_atom == ')' ){
+    Warning("STX (n) translates to STX n\n");
+  }
+
   if ( l < 0 || l > 65535 ) return Error(WORD_ERR,"");
 
   if ( TestAtom(',') ) {
@@ -291,8 +319,16 @@ int op7(int op)
 {
   int err;
   int32_t l;
+  int brace;
+
+  KillSpace();
+  brace = atom == '(';
 
   if ( (err = Expression( &l )) == EXPR_ERROR ) return 1;
+  if ( brace && last_atom == ')' ){
+    Warning("STY (n) translates to STY n\n");
+  }
+
   if ( l < 0 || l > 65535 ) return Error(WORD_ERR,"");
 
   if ( TestAtom(',') ) {
@@ -325,6 +361,7 @@ int op8(int op)
   int err;
   int32_t l;
   int flag = 0;
+  int brace = 0;
 
   if ( TestAtom('#') ){
 
@@ -334,7 +371,12 @@ int op8(int op)
     writeConstByte(op == 0x20 ? 0x89 : op);
     writeByte((char)l);
   } else {
+    brace = atom == '(';
     if ( (err = Expression( &l )) == EXPR_ERROR ) return 1;
+    if ( brace && last_atom == ')' ){
+      Warning("BIT/LDY/CPY (n) translates to BIT/LDY/CPY n\n");
+    }
+
     if ( l < 0 || l > 65535 ) return Error(WORD_ERR,"");
     op |= 0x04;
     CYCLES += 3;
@@ -369,6 +411,7 @@ int op9(int op)
   int err;
   int32_t l;
   int flag = 0;
+  int brace = 0;
 
   if ( TestAtom('#') ){
 
@@ -378,7 +421,12 @@ int op9(int op)
     writeConstByte(op);
     writeByte((char)l);
   } else {
+    brace = atom == '(';
     if ( (err = Expression( &l )) == EXPR_ERROR ) return 1;
+    if ( brace && last_atom == ')' ){
+      Warning("LDX (n) translates to LDX n\n");
+    }
+
     if ( l < 0 || l > 65535 ) return Error(WORD_ERR,"");
     CYCLES += 3;
     op |= 0x04;
@@ -470,6 +518,12 @@ int opc(int op)
 {
   int err;
   int32_t l;
+  int saveCYCLES;
+  int saveOp;
+
+  saveOp = op;
+  saveCYCLES = CYCLES;
+  SavePosition();
 
   if ( TestAtom('(') ){
     if ( (err = Expression( &l )) == EXPR_ERROR ) return 1;
@@ -480,16 +534,28 @@ int opc(int op)
       op |= 0x10;
     }
     if ( !TestAtom(')') ) return Error(SYNTAX_ERR,"");
-    CYCLES += 6;
-  } else {
-    if ( (err = Expression( &l )) == EXPR_ERROR ) return 1;
-    if ( l < 0 || l > 65535 ) return Error(WORD_ERR,"");
-    if ( err != EXPR_UNSOLVED ){
-      int dist = Global.pc - l - 2;
-      if ( dist >= -128 && dist <= 127 ) Warning("JMP can be changed into BRA !\n");
+    KillSpace();
+    if ( atom == 0 ){
+      CYCLES += 6;
+      writeConstByte(op);
+      writeWordLittle((short)l);
+      if ( err == EXPR_UNSOLVED ) saveCurrentLine();
+      return 0;
+    } else {
+      // Possible not indirect but expression with braces
+      op = saveOp;
+      CYCLES = saveCYCLES;
+      RestorePosition();
     }
-    CYCLES += 3;
   }
+  if ( (err = Expression( &l )) == EXPR_ERROR ) return 1;
+  if ( l < 0 || l > 65535 ) return Error(WORD_ERR,"");
+  if ( err != EXPR_UNSOLVED ){
+    int dist = Global.pc - l - 2;
+    if ( dist >= -128 && dist <= 127 ) Warning("JMP can be changed into BRA !\n");
+  }
+  CYCLES += 3;
+
   writeConstByte(op);
   writeWordLittle((short)l);
   if ( err == EXPR_UNSOLVED ) saveCurrentLine();
@@ -523,7 +589,7 @@ int CheckMnemonic(char *s)
     }
 
     if ( GetComment() ){
-      Error(GARBAGE_ERR,"");
+      Error(GARBAGE_ERR, srcLinePtr);
       return 1;
     }
   }
