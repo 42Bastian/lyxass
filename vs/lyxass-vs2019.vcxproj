@@ -71,14 +71,14 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <TargetName>lyxassd</TargetName>
+    <TargetName>lyxass</TargetName>
     <OutDir>$(SolutionDir)vs\$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
     <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <TargetName>lyxassd</TargetName>
+    <TargetName>lyxass</TargetName>
     <OutDir>$(SolutionDir)vs\$(Platform)\$(Configuration)\</OutDir>
     <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
   </PropertyGroup>
@@ -146,7 +146,8 @@
       <ProgramDatabaseFile>$(SolutionDir)vs\$(Configuration)\$(TargetName).pdb</ProgramDatabaseFile>
     </Link>
     <PostBuildEvent>
-      <Command>copy /b $(OutDir)$(TargetName)$(TargetExt) $(SolutionDir)bin\win32</Command>
+      <Command>copy /b  $(OutDir)$(TargetName)$(TargetExt)  $(SolutionDir)bin\win32\$(TargetName)$(TargetExt)
+upx --lzma  $(SolutionDir)bin\win32\$(TargetName)$(TargetExt)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -167,7 +168,8 @@
       <ProgramDatabaseFile>$(SolutionDir)vs\$(Platform)\$(Configuration)\$(TargetName).pdb</ProgramDatabaseFile>
     </Link>
     <PostBuildEvent>
-      <Command>copy /b $(OutDir)$(TargetName)$(TargetExt) $(SolutionDir)bin\x64</Command>
+      <Command>copy /b  $(OutDir)$(TargetName)$(TargetExt)  $(SolutionDir)bin\win32\$(TargetName)$(TargetExt)
+upx --lzma $(SolutionDir)bin\win32\$(TargetName)$(TargetExt)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

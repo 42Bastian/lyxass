@@ -199,7 +199,7 @@ int Error(int err_num,const char *s)
   if ( !verbose) verbose=1;
   killLine();
 
-  if ( err_num < 0 ){
+  if ( fatal ){
     fprintf(stderr,"leaving ...\n");
     exit(1);
   }

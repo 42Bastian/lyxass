@@ -11,7 +11,7 @@ void Warning(const char *);
 //EXTERN int err_num;
 
 #define INCLUDE_ERR	1
-#define FILE_ERR       -2
+#define FILE_ERR        2
 #define LABEL_ERR       3
 #define OP_ERR          4
 #define MLABEL_ERR      5

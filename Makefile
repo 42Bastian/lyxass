@@ -5,6 +5,12 @@ LDFLAGS=
 
 all: lyxass
 
+ifeq ($(OSTYPE),cygwin)
+EXT=.exe
+else
+EXT=#
+endif
+
 .dep:
 	$(CC) -MM *.c >.dep
 
@@ -40,11 +46,11 @@ OBJ = $(SRC:.c=.o)
 lyxass: $(OBJ)
 	$(CC) $(LDFLAGS) $(OBJ) -o $@
 
-.PHONY: pack
-pack:
-	upx --lzma bin/win32/lyxass.exe
-	upx --lzma bin/x64/lyxass.exe
-	upx --lzma bin/cygwin/lyxass.exe
+.PHONY: install
+install: lyxass
+	cp lyxass bin/$(OSTYPE)
+	upx --lzma bin/$(OSTYPE)/lyxass$(EXT)
+
 clean:
 	rm -f .dep
 	rm -f *.o

@@ -325,7 +325,7 @@ int p_include(int d)
 {
   int err;
 
-  if (Global.Files == MAX_INCLUDE) return Error(INCLUDE_ERR,"");
+  if (Global.Files == MAX_INCLUDE) return Error(-INCLUDE_ERR,"");
 
   if ( GetFileName() ) return 1;
 
