@@ -40,7 +40,7 @@ extern REFERENCE *refFirst;
 extern REFERENCE *refLast;
 
 char info[] =
-  "tjass/lyxass C-version V 1.5.1 " __DATE__ "\n"
+  "tjass/lyxass C-version V 1.5.2 " __DATE__ "\n"
   "(c) 1993..2003/2020 42Bastian Schick\n";
 
 /********************************************************************/
@@ -86,7 +86,7 @@ void writeConstByte(char c)
       Global.genesis = -1;
     } else {
       *code.Ptr++ = c;
-      code.Size++;
+      ++code.Size;
     }
   }
   Global.pc++;
@@ -102,7 +102,7 @@ void writeRelocByte(char c, int reloc)
 //	printf("reloc: %d: %04x\n",reloc,Global.pc);
       }
       *code.Ptr++ = c;
-      code.Size++;
+      ++code.Size;
     }
   }
   Global.pc++;
@@ -116,7 +116,7 @@ void writeByte(char c)
       Global.genesis = -1;
     } else {
       *code.Ptr++ = c;
-      code.Size++;
+      ++code.Size;
     }
   }
   Global.pc++;
@@ -133,7 +133,7 @@ void writeSameBytes(char c,int count)
       while ( --i ){
         *code.Ptr++ = c;
       }
-      code.Size+= count;
+      code.Size += count;
     }
   }
   Global.pc+=count;
@@ -150,7 +150,7 @@ void writeBytes(char *src,int count)
       while ( --i ){
         *code.Ptr++ = *src++;
       }
-      code.Size+= count;
+      code.Size += count;
     }
   }
   Global.pc+=count;
@@ -537,17 +537,6 @@ int main(int argc, char **argv)
 	free(ptr1);
       }
     }
-    if ( verbose ){
-      printf("\nCode-size : %ld\n"
-	     "Lines : %d\n"
-	     "Macros expanded : %d\n"
-	     "Pass 2 runs : %d\n"
-	     "Start-address : $%04x\n"
-	     "Memory usage : %ld\n",
-	     code.Size,Global.Lines,
-	     cntMacroExpand,cntRef,Global.run,totalMemory);
-    }
-
     if ( cntError ){
       printf("Total Errors :%d\nNo file written !\n",cntError);
     } else {
@@ -594,16 +583,29 @@ int main(int argc, char **argv)
 	}
 	if ( data ){
 	  if (Global.mainMode == LYNX ){
-	    writeFile(outfile,code.Mem+10,code.Size-10);
+            code.Size -= 10;
+            code.Mem += 10;
 	  } else {
-	    writeFile(outfile,code.Mem+12,code.Size-12);
+            code.Size -= 12;
+            code.Mem += 12;
 	  }
+          writeFile(outfile,code.Mem,code.Size);
 	} else {
 	  writeFile(outfile,code.Mem,code.Size);
 	}
 	if ( symbols ){
 	  writeSymbols(outfile, hexsymbols);
 	}
+        if ( verbose ){
+          printf("\nCode-size : %ld\n"
+                 "Lines : %d\n"
+                 "Macros expanded : %d\n"
+                 "Pass 2 runs : %d\n"
+                 "Start-address : $%04x\n"
+                 "Memory usage : %ld\n",
+                 code.Size,Global.Lines,
+                 cntMacroExpand,cntRef,Global.run,totalMemory);
+        }
       }else{
 	printf("No RUN statement ! No outputfile generated.\n");
       }
