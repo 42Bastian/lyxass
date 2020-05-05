@@ -168,8 +168,8 @@ upx --lzma  $(SolutionDir)bin\win32\$(TargetName)$(TargetExt)</Command>
       <ProgramDatabaseFile>$(SolutionDir)vs\$(Platform)\$(Configuration)\$(TargetName).pdb</ProgramDatabaseFile>
     </Link>
     <PostBuildEvent>
-      <Command>copy /b  $(OutDir)$(TargetName)$(TargetExt)  $(SolutionDir)bin\win32\$(TargetName)$(TargetExt)
-upx --lzma $(SolutionDir)bin\win32\$(TargetName)$(TargetExt)</Command>
+      <Command>copy /b  $(OutDir)$(TargetName)$(TargetExt)  $(SolutionDir)bin\x64\$(TargetName)$(TargetExt)
+upx --lzma $(SolutionDir)bin\x64\$(TargetName)$(TargetExt)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
