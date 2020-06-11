@@ -11,6 +11,10 @@ else
 EXT=#
 endif
 
+ifeq ($(OSTYPE),)
+OSTYPE:=linux
+endif
+
 .dep:
 	$(CC) -MM *.c >.dep
 
