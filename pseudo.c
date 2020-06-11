@@ -469,8 +469,8 @@ int p_set(int d)
   IF
 
 */
-#define PUSH_IF() Current.ifSave[++Current.ifCnt] = Current.ifFlag
-#define POP_IF()  Current.ifFlag = Current.ifSave[Current.ifCnt--]
+#define PUSH_IF() Current.ifSave[++Current.ifCnt] = Current.ifFlag; Current.parseSave[Current.ifCnt] = Current.ParseOnly
+#define POP_IF()  Current.ParseOnly = Current.parseSave[Current.ifCnt];Current.ifFlag = Current.ifSave[Current.ifCnt--]
 
 int p_if(int d)
 {
@@ -587,8 +587,6 @@ int p_endif(int d)
   if ( ! Current.ifCnt ) Error(ENDIF1_ERR,"");
 
   POP_IF();
-
-  Current.ParseOnly = Current.ifFlag;
 
   return 0;
 }

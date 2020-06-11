@@ -110,6 +110,7 @@ EXTERN struct current_s{
   int ifCnt;
   int ifFlag;       // != 0 => assemble line
   int ifSave[MAX_IF+1];
+  int parseSave[MAX_IF+1];
 
   int switchCnt;
   int switchFlag;
