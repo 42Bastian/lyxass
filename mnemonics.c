@@ -579,6 +579,43 @@ int opd(int op)
   return 0;
 }
 
+// BBRx,BBSx
+int ope(int op)
+{
+  int32_t l;
+  int32_t dst;
+  int err_l;
+  int err_dst;
+
+  err_l = Expression(&l);
+
+  if ( err_l == EXPR_ERR) return 1;
+
+  if ( l < 0 || l > 255 ) return Error(BYTE_ERR,"");
+
+  if ( !TestAtom(',') ) return Error(SYNTAX_ERR,"");
+
+  err_dst = Expression(&dst);
+  if ( err_dst == EXPR_OK ){
+    int dist = dst - Global.pc - 3;
+    if ( dist > 127 || dist < -128 )return Error(DISTANCE_ERR,"");
+    writeConstByte(op);
+    writeByte((char)l);
+    writeConstByte((char)dist);
+  } else {
+    saveCurrentLine();
+    writeConstByte(op);
+    writeByte((char)l);
+    writeConstByte(0);
+  }
+
+  CYCLES += 5;
+
+  if ( err_l == EXPR_UNSOLVED && err_dst != EXPR_UNSOLVED ) saveCurrentLine();
+
+  return 0;
+}
+
 int CheckMnemonic(char *s)
 {
   if ( Current.ifFlag && Current.switchFlag){

@@ -21,7 +21,7 @@
 #define OPB		11	/* rmb/smb */
 #define OPC		12	/* jmp */
 #define OPD		13	/* brk */
-#define OPE		14	/* not yet */
+#define OPE		14	/* bbr/bbs */
 #define OPF		15	/* pseudo - opcode */
 
 int op0(int);
@@ -38,28 +38,29 @@ int opa(int);
 int opb(int);
 int opc(int);
 int opd(int);
+int ope(int);
 
 
 const struct opcode_s OpCodes[] = {
   {"ADC" ,op3,0x61},
   {"AND" ,op3,0x21},
   {"ASL" ,opa,0x02},
-  {"BBR0",op1,0x0F},
-  {"BBR1",op1,0x1F},
-  {"BBR2",op1,0x2F},
-  {"BBR3",op1,0x3F},
-  {"BBR4",op1,0x4F},
-  {"BBR5",op1,0x5F},
-  {"BBR6",op1,0x6F},
-  {"BBR7",op1,0x7F},
-  {"BBS0",op1,0x8F},
-  {"BBS1",op1,0x9F},
-  {"BBS2",op1,0xAF},
-  {"BBS3",op1,0xBF},
-  {"BBS4",op1,0xCF},
-  {"BBS5",op1,0xDF},
-  {"BBS6",op1,0xEF},
-  {"BBS7",op1,0xFF},
+  {"BBR0",ope,0x0F},
+  {"BBR1",ope,0x1F},
+  {"BBR2",ope,0x2F},
+  {"BBR3",ope,0x3F},
+  {"BBR4",ope,0x4F},
+  {"BBR5",ope,0x5F},
+  {"BBR6",ope,0x6F},
+  {"BBR7",ope,0x7F},
+  {"BBS0",ope,0x8F},
+  {"BBS1",ope,0x9F},
+  {"BBS2",ope,0xAF},
+  {"BBS3",ope,0xBF},
+  {"BBS4",ope,0xCF},
+  {"BBS5",ope,0xDF},
+  {"BBS6",ope,0xEF},
+  {"BBS7",ope,0xFF},
   {"BCC" ,op1,0x90},
   {"BLT" ,op1,0x90},
   {"BCS" ,op1,0xB0},
