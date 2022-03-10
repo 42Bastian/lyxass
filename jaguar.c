@@ -209,7 +209,10 @@ int imm_reg(int op)
 
   if ( (err = Expression( &imm )) == EXPR_ERR ) return 1;
 
-  if ( err == EXPR_UNSOLVED ) saveCurrentLine();
+  if ( err == EXPR_UNSOLVED ) {
+    saveCurrentLine();
+    imm = 1;
+  }
 
   if ( imm < 1 || imm > 32 ) Error(IMM_ERR,"1<=x<=32");
 
