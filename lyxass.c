@@ -40,7 +40,7 @@ extern REFERENCE *refFirst;
 extern REFERENCE *refLast;
 
 char info[] =
-  "tjass/lyxass C-version V 1.5.4 " __DATE__ "\n"
+  "tjass/lyxass C-version V 1.5.5 " __DATE__ "\n"
   "(c) 1993..2003/2022 42Bastian Schick\n";
 
 /********************************************************************/
@@ -365,6 +365,8 @@ void help()
 	 "global label[,label     - define label as global\n"
 	 "echo \"%%Dlabel %%Hlabel\" - print text and label-values \n"
          "                        %%D as decimal %%H as hex\n"
+         "label reg [r]number[!]  - Define a label for a register\n"
+         "                          ! allows redefinition w/o warning\n"
 	 "-------------- labels\n"
 	 " General: Labels are case-sensitive, valid characters are :\n"
 	 " 0..9, \"_\",\".\", A..Z, a..z\n"

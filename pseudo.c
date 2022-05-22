@@ -842,6 +842,7 @@ int p_reg(int d)
 {
   int32_t l;
   int i,o;
+  int allowRedefine;
 
   if ( sourceMode == LYNX ) return Error(SYNTAX_ERR,"");
 
@@ -870,7 +871,9 @@ int p_reg(int d)
     o += 32;
   }
 
-  if ( reg_flag[o] ) {
+  allowRedefine = TestAtom('!');
+
+  if ( reg_flag[o] && allowRedefine == 0 ) {
     char help[256];
     sprintf(help,"Register already defined: %s:%5d",
             file_list[reg_file[o]].name,reg_line[o]);
