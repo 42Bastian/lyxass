@@ -42,6 +42,9 @@ extern int verbose;
 static int reg_flag[32*2];
 static int reg_line[32*2];
 static int reg_file[32*2];
+static label_t *reg_label[32*2];
+static int regAllocStart = 29;
+
 static char transASCII[256];
 
 int mac_mode = 0;
@@ -838,6 +841,42 @@ int p_mode(int modus)
   return 0;
 }
 
+int p_regalloc(int dummy)
+{
+  int32_t l;
+  if ( NeedConst( &l, "REGALLOC") ) return 1;
+
+  if ( (l < 0 || l > 31) ) Error(REG_ERR,"");
+
+  regAllocStart = l;
+
+  return 0;
+}
+
+int p_regmap(int dummy)
+{
+  int i;
+  (void)dummy;
+  fprintf(my_stderr,"Reg %-32s %-32s\n","Bank0","Bank 1");
+  for(i = 31; i >= 0; --i ){
+    if ( reg_flag[i] || reg_flag[i+32] ){
+      fprintf(my_stderr," %2d ",i);
+      if ( reg_flag[i] ){
+        fprintf(my_stderr, "%-32s ",reg_label[i]->name);
+      } else {
+        fprintf(my_stderr, "%-32s "," ");
+      }
+      if ( reg_flag[i+32] ){
+        fprintf(my_stderr, "%-32s ",reg_label[i+32]->name);
+      } else {
+        fprintf(my_stderr, "%-32s "," ");
+      }
+      fprintf(my_stderr, "\n");
+    }
+  }
+  return 0;
+}
+
 int p_reg(int d)
 {
   int32_t l;
@@ -855,7 +894,7 @@ int p_reg(int d)
     if ( NeedConst( &l, "REG") ) return 1;
   }
 
-  if ( l < 0 || l > 31 ) Error(REG_ERR,"");
+  if ( (l < 0 || l > 31) && l != 99 ) Error(REG_ERR,"");
 
   if ( (Current.LabelPtr->type == REGISTER ) &&
        (Current.LabelPtr->file != -1) ) return Error(REG1_ERR,"");
@@ -870,8 +909,29 @@ int p_reg(int d)
        Current.LabelPtr->name[i-1] == 'a'){
     o += 32;
   }
-
   allowRedefine = TestAtom('!');
+  if ( (o == 99 || o == (99+32)) && allowRedefine ){
+    return Error(SYNTAX_ERR,
+                 "'!' not allowed with automatic register allocation.");
+  }
+  if ( o == 99 || o == (99+32) ){
+    int end = o-99;
+    i = regAllocStart;
+    if ( o == 99+32 ){
+      i+=32;
+    }
+    o = -1;
+    for( ; i >= end; --i){
+      if ( reg_flag[i] == 0 ){
+        o = i;
+        l = o & 31;
+        break;
+      }
+    }
+    if ( o == -1 ){
+      return Error(SYNTAX_ERR,"No more free register");
+    }
+  }
 
   if ( reg_flag[o] && allowRedefine == 0 ) {
     char help[256];
@@ -884,6 +944,7 @@ int p_reg(int d)
   reg_flag[o] = 1;
   reg_file[o] = Current.File;
   reg_line[o] = Current.Line;
+  reg_label[o] = Current.LabelPtr;
   Current.LabelPtr->file = Current.File;
   Current.LabelPtr->type = REGISTER;
   Current.LabelPtr->value = l;
@@ -931,7 +992,7 @@ int p_unreg(int d)
       reg_flag[o] = 0;
       reg_line[o] = 0;
       reg_file[o] = 0;
-
+      reg_label[o] = NULL;
     }
 
   }while (TestAtom(','));

@@ -40,7 +40,7 @@ extern REFERENCE *refFirst;
 extern REFERENCE *refLast;
 
 char info[] =
-  "tjass/lyxass C-version V 1.5.5 " __DATE__ "\n"
+  "tjass/lyxass C-version V 1.6.0 " __DATE__ "\n"
   "(c) 1993..2003/2022 42Bastian Schick\n";
 
 /********************************************************************/
@@ -367,6 +367,9 @@ void help()
          "                        %%D as decimal %%H as hex\n"
          "label reg [r]number[!]  - Define a label for a register\n"
          "                          ! allows redefinition w/o warning\n"
+         "                          If number is 99, then allocate from REG pool\n"
+         "regmap                  - show REG usage\n"
+         "regtop                  - define top of REG pool, default is 29\n"
 	 "-------------- labels\n"
 	 " General: Labels are case-sensitive, valid characters are :\n"
 	 " 0..9, \"_\",\".\", A..Z, a..z\n"
