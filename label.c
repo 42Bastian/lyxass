@@ -103,7 +103,7 @@ label_t * DefineLabel(label_t *l, int *solved)
 
   //mesg("DefineLabel");
 
-  //  printf("Type:%02x\n",l->type);
+//->   printf("Type:%02x\n",l->type);
 
   if ( (l->type & GLOBAL) || (l->type & NORMAL) ){
 
@@ -137,29 +137,28 @@ label_t * DefineLabel(label_t *l, int *solved)
 
     else {
       do{
-	if ( ptr->len == l->len &&
-	     ! strcmp(l->name, ptr->name) ){
-
-	  if ( (ptr->type & REGISTER) ){
-	    l->type |= REGISTER;
-	    l->file = Current.File;
-	    return ptr;
-	  } else if ( (ptr->type & VARIABLE) ){
-	    //printf("LABEL:(%s)%d\n",next->name,next->value);
-	    l->type |= VARIABLE;
-	    return ptr;
-	  } else if ( ptr->type & UNSOLVED ){
-	    l->next = ptr->next;
-	    *ptr = *l;
-	    *solved = 1;
-	    return ptr;
-	  } else {
-	    Error(REDEF_ERR,(char *) ptr);
-	    return NULL;
-	  }
-	}
-	if ( ! ptr->next ) break;
-	ptr = ptr->next;
+        if ( ptr->len == l->len && ! strcmp(l->name, ptr->name) ){
+          if ( (ptr->type & REGISTER) ){
+            l->type |= REGISTER;
+            l->file = Current.File;
+            return ptr;
+          } else
+            if ( (ptr->type & VARIABLE) ){
+            //printf("LABEL:(%s)%d\n",next->name,next->value);
+            l->type |= VARIABLE;
+            return ptr;
+          } else if ( ptr->type & UNSOLVED ){
+            l->next = ptr->next;
+            *ptr = *l;
+            *solved = 1;
+            return ptr;
+          } else {
+            Error(REDEF_ERR,(char *) ptr);
+            return NULL;
+          }
+        }
+        if ( ! ptr->next ) break;
+        ptr = ptr->next;
       } while ( 1 );
       ptr->next = next_global;
     }
@@ -189,30 +188,30 @@ label_t * DefineLabel(label_t *l, int *solved)
       macro_hook = next_macro;
     } else {
       do{
-	if ( (ptr->len == l->len) &&
-	     ! strcmp(l->name, ptr->name) ){
-	  if ( ptr->type & VARIABLE ){
-	    //	    printf("LABEL:(%s)%d\n",ptr->name,ptr->value);
-	    l->type |= VARIABLE;
-	    return ptr;
-	  } else if ( ptr->type & UNSOLVED ){
-	    l->next = ptr->next;
-	    *ptr = *l;
-	    *solved = 1;
-	    return ptr;
-	  } else {
-	    // re-definition allowed
-	    ptr->line = l->line;
-	    ptr->file = l->file;
-	    ptr->value = l->value;
-	    return ptr;
-	    //	    Error(REDEF_ERR,(char *) ptr);
-	    //	    return NULL;
-	  }
+        if ( (ptr->len == l->len) &&
+             ! strcmp(l->name, ptr->name) ){
+          if ( ptr->type & VARIABLE ){
+            //      printf("LABEL:(%s)%d\n",ptr->name,ptr->value);
+            l->type |= VARIABLE;
+            return ptr;
+          } else if ( ptr->type & UNSOLVED ){
+            l->next = ptr->next;
+            *ptr = *l;
+            *solved = 1;
+            return ptr;
+          } else {
+            // re-definition allowed
+            ptr->line = l->line;
+            ptr->file = l->file;
+            ptr->value = l->value;
+            return ptr;
+            //      Error(REDEF_ERR,(char *) ptr);
+            //      return NULL;
+          }
 
-	}
-	if ( !ptr->next ) break;
-	ptr = ptr->next;
+        }
+        if ( !ptr->next ) break;
+        ptr = ptr->next;
       } while ( 1 );
       ptr->next = next_macro;
     }
@@ -240,24 +239,24 @@ label_t * DefineLabel(label_t *l, int *solved)
       local_hook = next_local;
     } else {
       do{
-	if ( (ptr->len == l->len) &&
-	     ! strcmp(l->name, ptr->name) ){
-	  if ( ptr->type & VARIABLE ){
-	    //printf("LABEL:(%s)%d\n",ptr->name,ptr->value);
-	    l->type |= VARIABLE;
-	    return ptr;
-	  } else if ( ptr->type & UNSOLVED ){
-	    l->next = ptr->next;
-	    *ptr = *l;
-	    *solved = 1;
-	    return ptr;
-	  } else {
-	    Error(REDEF_ERR,(char *) ptr);
-	    return NULL;
-	  }
-	}
-	if ( !ptr->next ) break;
-	ptr = ptr->next;
+        if ( (ptr->len == l->len) &&
+             ! strcmp(l->name, ptr->name) ){
+          if ( ptr->type & VARIABLE ){
+            //printf("LABEL:(%s)%d\n",ptr->name,ptr->value);
+            l->type |= VARIABLE;
+            return ptr;
+          } else if ( ptr->type & UNSOLVED ){
+            l->next = ptr->next;
+            *ptr = *l;
+            *solved = 1;
+            return ptr;
+          } else {
+            Error(REDEF_ERR,(char *) ptr);
+            return NULL;
+          }
+        }
+        if ( !ptr->next ) break;
+        ptr = ptr->next;
       } while ( 1 );
 
       ptr->next = next_local;
@@ -288,11 +287,11 @@ label_t * DefineLabel(label_t *l, int *solved)
     } else {
 
       for ( ; ptr->next ; ptr = ptr->next ){
-	if ( (ptr->len == l->len) &&
-	     ! strcmp(l->name, ptr->name) ){
-	  Error(REDEF_ERR,(char *) ptr);
-	  return NULL;
-	}
+        if ( (ptr->len == l->len) &&
+             ! strcmp(l->name, ptr->name) ){
+          Error(REDEF_ERR,(char *) ptr);
+          return NULL;
+        }
       }
       ptr->next = next_macroname;
     }
@@ -330,9 +329,9 @@ label_t * FindLabel(label_t *l, int32_t *value)
       *value = (int32_t)next->value;
       l->type = next->type;
       if ( next->type & UNSOLVED )
-	return 0;
+        return 0;
       else
-	return next;
+        return next;
     }
   }
   return 0;

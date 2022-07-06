@@ -787,7 +787,6 @@ int mainloop(int pass2)
 	continue;
       }
       Current.Label.type = NORMAL;
-
     }
 
     if ( Current.Label.len &&
@@ -806,9 +805,16 @@ int mainloop(int pass2)
     // we have a line-label, so store command elsewhere
     //
 
-    if ( GetCmd() ) continue;
-
-    if ( checkCode( Current.Cmd,0 ) >= 0 ) continue;
+    if ( GetCmd() ) {
+      if ( Current.Label.type & REGISTER ){
+        return Error(SYNTAX_ERR,"REG label used as code label");
+      }
+      continue;
+    }
+    if ( checkCode( Current.Cmd,0 ) >= 0 ){
+      // XXX: Must check if label is still a code label
+      continue;
+    }
 
     Error(UNKNOWN_ERR,Current.Cmd);
 

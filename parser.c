@@ -551,7 +551,7 @@ int GetLabel(label_t *Label)
   Label->line  = Current.Line;
   Label->value = Global.pc;
 
-  //  printf("GetLabel:%d(%s)%p %p",len,Label->name,Label->name,ptr);
+//->  printf("GetLabel:%d(%s)%p %p\n",len,Label->name,Label->name,ptr);
 
   return 0;
 }
