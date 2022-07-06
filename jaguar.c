@@ -47,7 +47,7 @@ int GetRegisterOrPC(int *reg)
 
   SavePosition();
 
-  *reg = 99;
+  *reg = -1;
 
   KillSpace();
 
@@ -105,7 +105,7 @@ int GetRegister(int *reg)
   int32_t solved;
   char *p;
 
-  *reg = 99;
+  *reg = -1;
 
   KillSpace();
 
