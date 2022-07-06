@@ -126,7 +126,9 @@ int GetRegister(int *reg)
     return Error(REG_ERR,"");
   }
 
-  if (regL2->type != REGISTER ) return 1; //Error(REG_ERR,"");
+  if (regL2->type != REGISTER || regL2->value == -1){
+    Error(REG_ERR,"REG label not defined!");
+  }
 
   if ( regL2->len > 2 ){
     *p++ = 'r';

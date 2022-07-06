@@ -439,7 +439,12 @@ int p_equ(int d)
 
   if ( NeedConst( &l, "EQU") ) return 1;
 
-  if ( ! Current.Label.len ) Error(SYNTAX_ERR,"");
+  if ( ! Current.Label.len ){
+    Error(SYNTAX_ERR,"");
+  }
+  if ( (Current.Label.type &  REGISTER) ){
+    Error(SYNTAX_ERR,"Cannot EQU a register label");
+  }
 
   if ( (Current.Label.type & VARIABLE) == 0){
     Current.LabelPtr->value = l;
@@ -459,6 +464,11 @@ int p_set(int d)
   if ( NeedConst( &l, "SET") ) return 1;
 
   if ( ! Current.Label.len ) Error(SYNTAX_ERR,"");
+
+  if ( (Current.Label.type &  REGISTER) ){
+    Error(SYNTAX_ERR,"Cannot EQU a register label");
+  }
+
 
   Current.LabelPtr->type |= VARIABLE;
   Current.LabelPtr->type &= ~CODELABEL;
@@ -982,6 +992,7 @@ int p_unreg(int d)
       }
 
       plabel->file = -1;
+      plabel->value = -1;
       o = l;
       i = (int)strlen(plabel->name);
       if ( i > 2 &&
