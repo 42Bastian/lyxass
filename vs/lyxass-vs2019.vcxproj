@@ -169,7 +169,7 @@ upx --lzma  $(SolutionDir)bin\win32\$(TargetName)$(TargetExt)</Command>
     </Link>
     <PostBuildEvent>
       <Command>copy /b  $(OutDir)$(TargetName)$(TargetExt)  $(SolutionDir)bin\x64\$(TargetName)$(TargetExt)
-upx --lzma $(SolutionDir)bin\x64\$(TargetName)$(TargetExt)</Command>
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
