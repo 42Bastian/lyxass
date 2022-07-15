@@ -77,6 +77,8 @@ int GetRegisterOrPC(int *reg)
 
   if (regL2->type != REGISTER ) return Error(REG_ERR,"");
 
+  if (regL2->type == REGISTER && regL2->value == -1 ) return Error(REG_ERR,"");
+
   if ( regL2->len > 2 ){
     *p++ = 'r';
     *p++ = (char)(regL2->value / 10 + '0');
@@ -123,12 +125,14 @@ int GetRegister(int *reg)
   if ( GetLabel(&regL) ) return 1;
 
   if ( (regL2 = FindLabel(&regL, &solved)) == NULL ){
+#if 0 /* allow pass 2 resolving */
+    return -1;
+#else
     return Error(REG_ERR,"");
+#endif
   }
 
-  if (regL2->type != REGISTER || regL2->value == -1){
-    Error(REG_ERR,"REG label not defined!");
-  }
+  if (regL2->type != REGISTER ) return -1;
 
   if ( regL2->len > 2 ){
     *p++ = 'r';
@@ -459,13 +463,13 @@ int load_reg(int op )
       if ( (err = Expression( &l )) == EXPR_ERR ) return 1;
 
       if ( err == EXPR_UNSOLVED ){
-	save = 1;
-	l = 4;
+        save = 1;
+        l = 4;
       }
 
       if ( !mac_mode ){
-	if ( (l & 3) ) return Error(IMM_ERR,"x % 4 != 0");
-	l >>= 2;
+        if ( (l & 3) ) return Error(IMM_ERR,"x % 4 != 0");
+        l >>= 2;
       }
       if ( l < 1 || l > 32 ) return Error(IMM_ERR,"4<=x<=128");
       reg1 = l == 32 ? 0 : l;
@@ -545,8 +549,8 @@ int store_reg(int op )
       if ( err == EXPR_UNSOLVED ) saveCurrentLine();
 
       if ( !mac_mode ){
-	if ( (l & 3) ) return Error(IMM_ERR,"x % 4 != 0");
-	l >>= 2;
+        if ( (l & 3) ) return Error(IMM_ERR,"x % 4 != 0");
+        l >>= 2;
       }
       if ( l < 1 || l > 32 ) return Error(IMM_ERR,"4<=x<=128");
 
