@@ -387,22 +387,23 @@ int cond_rel(int op )
 
   op = ( op << 10 ) | cond;
 
+  if ( (Global.pc < 0xf03000) && (Global.pc & 3) ){
+    Warning("JR not long-aligned ! NOP inserted !");
+    writeWordBig((short)0xe400);
+  }
+
+
   if ( err == EXPR_UNSOLVED ){
     saveCurrentLine();
   } else {
     int32_t dist = (int32_t)dest - (Global.pc + 2);
     if ( dist < -32 || dist > 30 ) {
-      printf("%08x %d\n",dest,dist);
       return Error(DISTANCE_ERR,"");
     }
     dist >>= 1;
     op  |= (dist & 31) << 5;
   }
 
-  if ( (Global.pc < 0xf03000) && (Global.pc & 3) ){
-    Warning("JR not long-aligned ! NOP inserted !");
-    writeWordBig((short)0xe400);
-  }
   writeWordBig( op );
   return 0;
 }
