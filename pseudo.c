@@ -38,12 +38,21 @@ int EndDefineMacro();
 extern FILE *my_stderr;
 extern int verbose;
 
+int jaguar_mode = -1;
+
 // keep track if a register is used
-static int reg_flag[32*2];
-static int reg_line[32*2];
-static int reg_file[32*2];
-static label_t *reg_label[32*2];
-static int regAllocStart = 29;
+typedef struct regLabel {
+  int reg_flag[32*2];
+  int reg_line[32*2];
+  int reg_file[32*2];
+  label_t *reg_label[32*2];
+  int regAllocStart;
+} regLabel_t;
+
+regLabel_t risc[2] = {
+  {.regAllocStart = 29 },
+  {.regAllocStart = 29 }
+};
 
 static char transASCII[256];
 
@@ -842,23 +851,28 @@ int p_global(int d)
 int p_mode(int modus)
 {
   sourceMode = modus;
-  if ( modus == JAGUAR ){
-    memset((char *)reg_flag,0, 2*32*sizeof(int) );
-    memset((char *)reg_line,0, 2*32*sizeof(int) );
-    memset((char *)reg_file,0, 2*32*sizeof(int) );
+  if ( modus == JAGUAR_GPU ){
+    jaguar_mode = 0;
+  } else  if ( modus == JAGUAR_DSP ){
+    jaguar_mode = 1;
+  } else {
+    jaguar_mode = -1;
   }
   //  printf("Switching to mode %d\n",modus);
   return 0;
 }
 
-int p_regalloc(int dummy)
+int p_regtop(int dummy)
 {
   int32_t l;
-  if ( NeedConst( &l, "REGALLOC") ) return 1;
+  if ( sourceMode == LYNX ) {
+    return Error(SYNTAX_ERR,"REGTOP only in RISC modes");
+  }
+  if ( NeedConst( &l, "REGTOP") ) return 1;
 
   if ( (l < 0 || l > 31) ) Error(REG_ERR,"");
 
-  regAllocStart = l;
+  risc[jaguar_mode].regAllocStart = l;
 
   return 0;
 }
@@ -867,17 +881,24 @@ int p_regmap(int dummy)
 {
   int i;
   (void)dummy;
-  fprintf(my_stderr,"Reg %-32s %-32s\n","Bank0","Bank 1");
+  if ( sourceMode == LYNX ) {
+    return Error(SYNTAX_ERR,"REGMAP only in RISC modes");
+  }
+  if ( jaguar_mode == 0 ){
+    fprintf(my_stderr,"Reg %-32s %-32s\n","Bank0 - GPU","Bank 1 - GPU");
+  } else {
+    fprintf(my_stderr,"Reg %-32s %-32s\n","Bank0 - DSP","Bank 1 - DSP");
+  }
   for(i = 31; i >= 0; --i ){
-    if ( reg_flag[i] || reg_flag[i+32] ){
+    if ( risc[jaguar_mode].reg_flag[i] || risc[jaguar_mode].reg_flag[i+32] ){
       fprintf(my_stderr," %2d ",i);
-      if ( reg_flag[i] ){
-        fprintf(my_stderr, "%-32s ",reg_label[i]->name);
+      if ( risc[jaguar_mode].reg_flag[i] ){
+        fprintf(my_stderr, "%-32s ",risc[jaguar_mode].reg_label[i]->name);
       } else {
         fprintf(my_stderr, "%-32s "," ");
       }
-      if ( reg_flag[i+32] ){
-        fprintf(my_stderr, "%-32s ",reg_label[i+32]->name);
+      if ( risc[jaguar_mode].reg_flag[i+32] ){
+        fprintf(my_stderr, "%-32s ",risc[jaguar_mode].reg_label[i+32]->name);
       } else {
         fprintf(my_stderr, "%-32s "," ");
       }
@@ -893,7 +914,9 @@ int p_reg(int d)
   int i,o;
   int allowRedefine;
 
-  if ( sourceMode == LYNX ) return Error(SYNTAX_ERR,"");
+  if ( sourceMode == LYNX ) {
+    return Error(SYNTAX_ERR,"REG only in RISC modes");
+  }
 
   if ( ! Current.Label.len ) Error(SYNTAX_ERR,"");
 
@@ -926,13 +949,13 @@ int p_reg(int d)
   }
   if ( o == 99 || o == (99+32) ){
     int end = o-99;
-    i = regAllocStart;
+    i = risc[jaguar_mode].regAllocStart;
     if ( o == 99+32 ){
       i+=32;
     }
     o = -1;
     for( ; i >= end; --i){
-      if ( reg_flag[i] == 0 ){
+      if ( risc[jaguar_mode].reg_flag[i] == 0 ){
         o = i;
         l = o & 31;
         break;
@@ -943,18 +966,19 @@ int p_reg(int d)
     }
   }
 
-  if ( reg_flag[o] && allowRedefine == 0 ) {
+  if ( risc[jaguar_mode].reg_flag[o] && allowRedefine == 0 ) {
     char help[256];
     sprintf(help,"Register already defined: %s:%5d",
-            file_list[reg_file[o]].name,reg_line[o]);
+            file_list[risc[jaguar_mode].reg_file[o]].name,
+            risc[jaguar_mode].reg_line[o]);
 
     Warning(help);
   }
 
-  reg_flag[o] = 1;
-  reg_file[o] = Current.File;
-  reg_line[o] = Current.Line;
-  reg_label[o] = Current.LabelPtr;
+  risc[jaguar_mode].reg_flag[o] = 1;
+  risc[jaguar_mode].reg_file[o] = Current.File;
+  risc[jaguar_mode].reg_line[o] = Current.Line;
+  risc[jaguar_mode].reg_label[o] = Current.LabelPtr;
   Current.LabelPtr->file = Current.File;
   Current.LabelPtr->type = REGISTER;
   Current.LabelPtr->value = l;
@@ -1000,10 +1024,10 @@ int p_unreg(int d)
            plabel->name[i-1] == 'a'){
         o += 32;
       }
-      reg_flag[o] = 0;
-      reg_line[o] = 0;
-      reg_file[o] = 0;
-      reg_label[o] = NULL;
+      risc[jaguar_mode].reg_flag[o] = 0;
+      risc[jaguar_mode].reg_line[o] = 0;
+      risc[jaguar_mode].reg_file[o] = 0;
+      risc[jaguar_mode].reg_label[o] = NULL;
     }
 
   }while (TestAtom(','));

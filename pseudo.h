@@ -51,7 +51,7 @@ int p_reg(int);
 int p_unreg(int);
 int p_macmode(int);
 int p_regmap(int);
-int p_regalloc(int);
+int p_regtop(int);
 
 const struct opcode_s pseudo[]={
     { "ORG",p_org,0 },
@@ -96,12 +96,12 @@ const struct opcode_s pseudo[]={
     { "IBYTES",p_ibytes,0},{ "INLINE",p_ibytes,0},    { "INCBIN",p_ibytes,0},
     { "LIST",p_list,0},
     { "GLOBAL",p_global,0},{ "GLOBL",p_global,0},
-    { "AGPU",p_mode,JAGUAR},{"ADSP",p_mode,JAGUAR},{"LYNX",p_mode,LYNX},
-    { "GPU",p_mode,JAGUAR},{"DSP",p_mode,JAGUAR},{"_6502",p_mode,LYNX},
+    { "AGPU",p_mode,JAGUAR_GPU},{"ADSP",p_mode,JAGUAR_DSP},{"LYNX",p_mode,LYNX},
+    { "GPU",p_mode,JAGUAR_GPU},{"DSP",p_mode,JAGUAR_DSP},{"_6502",p_mode,LYNX},
     { "REG",p_reg,0}, { "UNREG",p_unreg,0},
     { "EQUR",p_reg,1},{ "EQURUNDE",p_unreg,1},
     { "REGMAP", p_regmap,0},
-    { "REGTOP", p_regalloc,0},
+    { "REGTOP", p_regtop,0},
 //->    { "MAC",p_macmode,1},{ "LYXASS",p_macmode,0},
     { "\0",0,0 }
 };

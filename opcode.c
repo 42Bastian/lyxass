@@ -58,9 +58,12 @@ int SearchOpcode2(const struct opcode_s *list,
     return -1;
   }
 
-  if ( Global.mainMode != JAGUAR && !strcasecmp(s,"DP") ){
-    return -1;
-  }
+  if ( Global.mainMode != JAGUAR_GPU &&
+       Global.mainMode != JAGUAR_DSP &&
+       !strcasecmp(s,"DP") )
+    {
+      return -1;
+    }
   curr = list;
 
   while ( curr->name[0] ){

@@ -388,7 +388,7 @@ int GetFileName()
 
   if ( save == '>' && bll_root && sourceMode == LYNX){
     strcpy(filename,bll_root);
-  } else if ( save == '>' && bjl_root && sourceMode == JAGUAR){
+  } else if ( save == '>' && bjl_root && (sourceMode == JAGUAR_GPU || sourceMode == JAGUAR_DSP) ){
     strcpy(filename,bjl_root);
   } else {
     strcpy(filename,Global.Path);

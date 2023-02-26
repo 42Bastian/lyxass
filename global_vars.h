@@ -140,8 +140,8 @@ EXTERN struct code_s{
 EXTERN int sourceMode;
 
 #define LYNX      1
-#define JAGUAR    2
-#define ARM_THUMB 3
+#define JAGUAR_GPU 2
+#define JAGUAR_DSP 3
 
 EXTERN char * bll_root;
 EXTERN char * bjl_root;

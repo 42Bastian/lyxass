@@ -377,7 +377,7 @@ void DumpGlobals()
   for (i = 0; i < 256; ++i){
     for( next = hash[i] ; next ; next = next->next ){
       if ( !(next->type & UNSOLVED) && (next->type & GLOBAL)){
-        if ( Global.mainMode == JAGUAR ){
+        if ( Global.mainMode == JAGUAR_DSP || Global.mainMode == JAGUAR_GPU ){
           fprintf(my_stderr,"<%32s> = %016"PRIx64" %02x [%5d %s]\n",
                   next->name, next->value, next->type,
                   next->line, file_list[next->file].name);
@@ -415,7 +415,7 @@ void writeSymbols(char *fn, int hex)
   for (i = 0; i < 256; ++i){
     for( next = hash[i] ; next ; next = next->next ){
       if ( !(next->type & UNSOLVED) && (next->type & GLOBAL)){
-        if ( Global.mainMode == JAGUAR ){
+        if ( Global.mainMode == JAGUAR_DSP || Global.mainMode == JAGUAR_GPU ){
           if ( hex ){
             fprintf(fh,"%-24s EQU $%016"PRIx64"\n",next->name,next->value);
           } else {
@@ -454,7 +454,7 @@ void DumpLocals()
   label_t * next = local_labels;
   fprintf(my_stderr,"Local labels:\n");
   for ( ; next ; next = next->next ){
-    if ( Global.mainMode == JAGUAR ){
+    if ( Global.mainMode == JAGUAR_DSP || Global.mainMode == JAGUAR_GPU ){
       fprintf(my_stderr,"<%32s> = %0"PRIx64" [%5d %s]\n",
               next->name,next->value,next->line,file_list[next->file].name);
     } else {
