@@ -38,8 +38,6 @@ int EndDefineMacro();
 extern FILE *my_stderr;
 extern int verbose;
 
-int jaguar_mode = -1;
-
 // keep track if a register is used
 typedef struct regLabel {
   int reg_flag[32*2];

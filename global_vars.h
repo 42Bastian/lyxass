@@ -138,6 +138,7 @@ EXTERN struct code_s{
 }code;
 
 EXTERN int sourceMode;
+EXTERN int jaguar_mode;
 
 #define LYNX      1
 #define JAGUAR_GPU 2

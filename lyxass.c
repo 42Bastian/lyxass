@@ -40,7 +40,7 @@ extern REFERENCE *refFirst;
 extern REFERENCE *refLast;
 
 char info[] =
-  "tjass/lyxass C-version V 1.6.4 " __DATE__ "\n"
+  "tjass/lyxass C-version V 1.7.0 " __DATE__ "\n"
   "(c) 1993..2003/2022..2023 42Bastian Schick\n";
 
 /********************************************************************/
@@ -99,7 +99,7 @@ void writeRelocByte(char c, int reloc)
       Global.genesis = -1;
     } else {
       if ( reloc ){
-//	printf("reloc: %d: %04x\n",reloc,Global.pc);
+//      printf("reloc: %d: %04x\n",reloc,Global.pc);
       }
       *code.Ptr++ = c;
       ++code.Size;
@@ -325,65 +325,68 @@ void help()
          "-v                      - increase verbosity\n"
          "-d                      - data output (no BLL header)\n"
          "-w                      - enable warnings\n"
-         "-D <label>=<value       - define a symbol\n"
+         "-D <label>=<value>      - define a symbol\n"
+         "-r                      - dump global symbols\n"
+         "-x value                - set run address (no need for RUN statement)\n"
+         "-t[l|g|d]              - Target (l)YNX (default), (g)PU or (d)SP\n"
          "-------------- pseudo-opcodes\n"
-	 "                          Pseudos are case-insensitive !\n"
+         "                          Pseudos are case-insensitive !\n"
          "lynx,gpu,dsp            - switch to lynx,gpu or dsp mode\n"
-	 "org                     - set pc\n"
-	 "run                     - set pc, first run sets start address and\n"
-	 "                          enables code-generation\n"
-	 "end                     - take a guess !\n"
+         "org                     - set pc\n"
+         "run                     - set pc, first run sets start address and\n"
+         "                          enables code-generation\n"
+         "end                     - take a guess !\n"
          "dc.b/dc.w/dc.l/dc.p     - define data, dc.b allows strings,\n"
          "                          w, l and only of 2,4 or 8 bytes\n"
          "dc.a                    - like dc.b only bytes are translated\n"
          "                          before storing\n"
          "ds.b / ds.w / ds.l      - reserve space in chunks of 1,2 or 4 bytes\n"
          "inc@/dec@               - increase/decrease @-var\n"
-	 "set@                    - set @-var\n"
-	 "(these commands need a leading SPACE !)\n"
-	 "set                     - redefine a label\n"
-	 "equ                     - define a constant label\n"
-	 "macro / endm            - define a macro\n"
-	 "path  [\"path\"]        - add \"path\" to the internal path,\n"
-	 "                          empty clears it\n"
-	 "trans \"filename\",off  - load a dc.a translation table\n"
-	 "ibytes \"filename\",off - load a binary\n"
+         "set@                    - set @-var\n"
+         "(these commands need a leading SPACE !)\n"
+         "set                     - redefine a label\n"
+         "equ                     - define a constant label\n"
+         "macro / endm            - define a macro\n"
+         "path  [\"path\"]        - add \"path\" to the internal path,\n"
+         "                          empty clears it\n"
+         "trans \"filename\",off  - load a dc.a translation table\n"
+         "ibytes \"filename\",off - load a binary\n"
          "incbin \"filename\",off - load a binary\n"
-	 "include \"filename\"    - include source-file\n"
-	 "if expression           - condional assembly\n"
-	 "ifd label               - label defined ?\n"
-	 "ifnd label              - label not defined ?\n"
-	 "ifvar \\x               - macro var \\x given ?\n"
-	 "else / endif            - more than one ELSE is allowed \n"
-	 "switch expression       - conditional assembly\n"
-	 "case expression         - \n"
-	 "ends                    - \n"
-	 "align expression        - align PC to expression\n"
-	 "rept expression         - repeat following source\n"
-	 "endr                    -\n"
-	 "list expression         - set verbose (1 normal , 2 macros)\n"
-	 "global label[,label     - define label as global\n"
-	 "echo \"%%Dlabel %%Hlabel\" - print text and label-values \n"
+         "include \"filename\"    - include source-file\n"
+         "if expression           - condional assembly\n"
+         "ifd label               - label defined ?\n"
+         "ifnd label              - label not defined ?\n"
+         "ifvar \\x               - macro var \\x given ?\n"
+         "else / endif            - more than one ELSE is allowed \n"
+         "switch expression       - conditional assembly\n"
+         "case expression         - \n"
+         "ends                    - \n"
+         "align expression        - align PC to expression\n"
+         "rept expression         - repeat following source\n"
+         "endr                    -\n"
+         "list expression         - set verbose (1 normal , 2 macros)\n"
+         "global label[,label     - define label as global\n"
+         "echo \"%%Dlabel %%Hlabel\" - print text and label-values \n"
          "                        %%D as decimal %%H as hex\n"
          "label reg [r]number[!]  - Define a label for a register\n"
          "                          ! allows redefinition w/o warning\n"
          "                          If number is 99, then allocate from REG pool\n"
          "regmap                  - show REG usage\n"
          "regtop                  - define top of REG pool, default is 29\n"
-	 "-------------- labels\n"
-	 " General: Labels are case-sensitive, valid characters are :\n"
-	 " 0..9, \"_\",\".\", A..Z, a..z\n"
-	 " Labels may not start with with a dot or digit.\n"
-	 " Local labels start with a dot (may be followed by a digit)\n"
+         "-------------- labels\n"
+         " General: Labels are case-sensitive, valid characters are :\n"
+         " 0..9, \"_\",\".\", A..Z, a..z\n"
+         " Labels may not start with with a dot or digit.\n"
+         " Local labels start with a dot (may be followed by a digit)\n"
          " Global labels end with a double double-colon.\n"
-	 " A @ inside a label is replaced by a 4 hexdigits.\n"
-	 " Macro-labels start with \".\\\".\n"
-	 " Macro-names follow the rules for normal labels.\n"
+         " A @ inside a label is replaced by a 4 hexdigits.\n"
+         " Macro-labels start with \".\\\".\n"
+         " Macro-names follow the rules for normal labels.\n"
          " Special label 'CYCLES' counts the opcode cycles and can be set/reset with 'set'\n"
-	 "-------------- macros\n"
-	 "There are no symbolic macro-parameters, but \\0..\\15 are replaced\n"
-	 "by the correponding parameter. Empty parameters are allowed.\n"
-	 "To protect commas you can surround a parameter with braces\n"
+         "-------------- macros\n"
+         "There are no symbolic macro-parameters, but \\0..\\15 are replaced\n"
+         "by the correponding parameter. Empty parameters are allowed.\n"
+         "To protect commas you can surround a parameter with braces\n"
   );
 }
 
@@ -421,27 +424,58 @@ void CommandLine(int *_argc, char **_argv)
       break;
     case 'D':
       {
-	label_t label;
-	int solved;
+        label_t label;
+        int solved;
 
-	--argc;
-	++argv;
-	++c_arg;
-	srcLinePtr = *argv;
+        --argc;
+        ++argv;
+        ++c_arg;
+        srcLinePtr = *argv;
 
-	atom = ' ';
+        atom = ' ';
 
-	if ( GetLabel( &label ) ) Error(-CMD_ERR,"");
-	label.value = 1;
-	label.type = NORMAL;
-	if ( TestAtom('=') ){
-	  int64_t l;
-	  if ( uni(&l) ) Error(-CMD_ERR,"");
-	  label.value = (int32_t)l;
-	}
-	DefineLabel(&label, &solved);
+        if ( GetLabel( &label ) ) Error(-CMD_ERR,"");
+        label.value = 1;
+        label.type = NORMAL;
+        if ( TestAtom('=') ){
+          int64_t l;
+          if ( uni(&l) ) Error(-CMD_ERR,"");
+          label.value = (int32_t)l;
+        }
+        DefineLabel(&label, &solved);
       }
       break;
+    case 'x':
+      {
+        int64_t l;
+
+        --argc;
+        ++argv;
+        ++c_arg;
+        srcLinePtr = *argv;
+        atom = ' ';
+        if ( uni(&l) ) Error(-CMD_ERR,"");
+        Global.run = (uint32_t)l;
+        Global.mainMode = sourceMode;
+        Global.genesis = 1;
+        Global.pc =  (uint32_t)l;
+      }
+      break;
+    case 't':
+        if ( argv[0][2] == 'l' || argv[0][2] == 'L' ){
+          sourceMode = LYNX;
+          jaguar_mode = -1;
+        } else if ( argv[0][2] == 'g' || argv[0][2] == 'G' ){
+          sourceMode = JAGUAR_GPU;
+          jaguar_mode = 0;
+        } else if ( argv[0][2] == 'D' || argv[0][2] == 'D' ){
+          sourceMode = JAGUAR_DSP;
+          jaguar_mode = 1;
+        } else {
+          Error(-SYNTAX_ERR,"Need l,g or d\n");
+        }
+        Global.mainMode = sourceMode;
+        break;
     case 'h':
       help();
       exit(1);
@@ -501,6 +535,7 @@ int main(int argc, char **argv)
   memset( (char *)&Global, 0, sizeof(struct global_s) );
   Global.run = -1;
   sourceMode = LYNX;
+  jaguar_mode = -1;
 
   code.Mem = my_malloc(MAX_CODE_SIZE);
   code.Size = 12;
@@ -535,72 +570,72 @@ int main(int argc, char **argv)
       Error(UNSOLVED_ERR,"\b");
 
       while ( ptr ){
-	printf("<%32s> [%5d %s]\n",ptr->unknown->name,
+        printf("<%32s> [%5d %s]\n",ptr->unknown->name,
                ptr->line+1,file_list[ptr->file].name);
-	ptr1 = ptr;
-	ptr = ptr->up;
-	free(ptr1);
+        ptr1 = ptr;
+        ptr = ptr->up;
+        free(ptr1);
       }
     }
     if ( cntError ){
       printf("Total Errors :%d\nNo file written !\n",cntError);
     } else {
       if ( Global.run != -1 ){
-	if ( Global.mainMode == LYNX ){
-	  code.Mem += 2;
-	  code.Size -=2;
+        if ( Global.mainMode == LYNX ){
+          code.Mem += 2;
+          code.Size -=2;
 
-	  code.Mem[0] = -0x80;
-	  code.Mem[1] = 0x08;
+          code.Mem[0] = -0x80;
+          code.Mem[1] = 0x08;
 
-	  code.Mem[2] = Global.run >> 8;
-	  code.Mem[3] = Global.run & 0xff;
-	  code.Mem[4] = (char)(code.Size >> 8);
-	  code.Mem[5] = (char)(code.Size & 0xff);
+          code.Mem[2] = Global.run >> 8;
+          code.Mem[3] = Global.run & 0xff;
+          code.Mem[4] = (char)(code.Size >> 8);
+          code.Mem[5] = (char)(code.Size & 0xff);
 
-	  code.Mem[6] = 'B';
-	  code.Mem[7] = 'S';
-	  code.Mem[8] = '9';
-	  code.Mem[9] = '3';
-	  /*
-	  code.Mem += 4;
-	  code.Size -= 4;
-	  code.Mem[0] = (char)0x81;
-	  code.Mem[1] = 'P';
-	  code.Mem[2] = Global.run >> 8;
-	  code.Mem[3] = Global.run & 0xff;
-	  code.Mem[4] = ((code.Size-6) >> 8) ^ 0xff;
-	  code.Mem[5] = ((code.Size-6) & 0xff) ^ 0xff;
-	  */
-	} else {
-	  code.Mem[0] = 'B';
-	  code.Mem[1] = 'S';
-	  code.Mem[2] = '9';
-	  code.Mem[3] = '4';
-	  code.Mem[4] = Global.run >> 24;
-	  code.Mem[5] = (Global.run >> 16) & 255;
-	  code.Mem[6] = (Global.run >>  8) & 255;
-	  code.Mem[7] = Global.run & 255;
-	  code.Mem[8] = (code.Size-12)>> 24;
-	  code.Mem[9] = ((code.Size-12) >> 16) & 255;
-	  code.Mem[10] = ((code.Size-12) >>  8) & 255;
-	  code.Mem[11] = (code.Size-12) & 255;
-	}
-	if ( data ){
-	  if (Global.mainMode == LYNX ){
+          code.Mem[6] = 'B';
+          code.Mem[7] = 'S';
+          code.Mem[8] = '9';
+          code.Mem[9] = '3';
+          /*
+          code.Mem += 4;
+          code.Size -= 4;
+          code.Mem[0] = (char)0x81;
+          code.Mem[1] = 'P';
+          code.Mem[2] = Global.run >> 8;
+          code.Mem[3] = Global.run & 0xff;
+          code.Mem[4] = ((code.Size-6) >> 8) ^ 0xff;
+          code.Mem[5] = ((code.Size-6) & 0xff) ^ 0xff;
+          */
+        } else {
+          code.Mem[0] = 'B';
+          code.Mem[1] = 'S';
+          code.Mem[2] = '9';
+          code.Mem[3] = '4';
+          code.Mem[4] = Global.run >> 24;
+          code.Mem[5] = (Global.run >> 16) & 255;
+          code.Mem[6] = (Global.run >>  8) & 255;
+          code.Mem[7] = Global.run & 255;
+          code.Mem[8] = (code.Size-12)>> 24;
+          code.Mem[9] = ((code.Size-12) >> 16) & 255;
+          code.Mem[10] = ((code.Size-12) >>  8) & 255;
+          code.Mem[11] = (code.Size-12) & 255;
+        }
+        if ( data ){
+          if (Global.mainMode == LYNX ){
             code.Size -= 10;
             code.Mem += 10;
-	  } else {
+          } else {
             code.Size -= 12;
             code.Mem += 12;
-	  }
+          }
           writeFile(outfile,code.Mem,code.Size);
-	} else {
-	  writeFile(outfile,code.Mem,code.Size);
-	}
-	if ( symbols ){
-	  writeSymbols(outfile, hexsymbols);
-	}
+        } else {
+          writeFile(outfile,code.Mem,code.Size);
+        }
+        if ( symbols ){
+          writeSymbols(outfile, hexsymbols);
+        }
         if ( verbose ){
           printf("\nCode-size : %ld\n"
                  "Lines : %d\n"
@@ -612,7 +647,7 @@ int main(int argc, char **argv)
                  cntMacroExpand,cntRef,Global.run,totalMemory);
         }
       }else{
-	printf("No RUN statement ! No outputfile generated.\n");
+        printf("No RUN statement ! No outputfile generated.\n");
       }
     }
     if ( dumpGlobals ){
@@ -634,23 +669,23 @@ void CheckForUnsolvedLocals()
       ptr1 = ptr->up;
 
       if ( (ptr->unknown->type & (LOCAL|MACRO)) == LOCAL){
-	if ( flag ){
-	  Error(UNSOLVED_ERR,"local");
-	  flag=0;
-	}
-	printf("<%32s> [%5d %s]\n",ptr->unknown->name,
+        if ( flag ){
+          Error(UNSOLVED_ERR,"local");
+          flag=0;
+        }
+        printf("<%32s> [%5d %s]\n",ptr->unknown->name,
                ptr->line+1,file_list[ptr->file].name);
-	ptr->unknown = 0;
+        ptr->unknown = 0;
 
-	if ( ptr->down ){
-	  ptr->down->up = ptr->up;
-	}
-	if ( ptr->up ){
-	  ptr->up->down = ptr->down;
-	}
-	if ( ptr == refFirst ) refFirst = ptr->up;
-	if ( ptr == refLast ) refLast = ptr->down;
-	free(ptr);
+        if ( ptr->down ){
+          ptr->down->up = ptr->up;
+        }
+        if ( ptr->up ){
+          ptr->up->down = ptr->down;
+        }
+        if ( ptr == refFirst ) refFirst = ptr->up;
+        if ( ptr == refLast ) refLast = ptr->down;
+        free(ptr);
       }
       ptr = ptr1;
     }
@@ -679,34 +714,34 @@ void doReference(void)
       //      printf("->%p = %p %p\n",ptr->unknown,l,ptr1);
 
       if ( ptr->unknown == save_current.LabelPtr ){
-	cntRef++;
-	Current.Line = ptr->line;
-	Current.File = ptr->file;
-	Current.Macro.Line = ptr->macroline;
-	Current.Macro.File = ptr->macrofile;
-	Current.Macro.invoked = ptr->macroinvoked;
-	Global.pc = ptr->pc;
-	//Current.var = ptr->var;
-	code.Ptr = ptr->codePtr;
-	Current.SrcPtr = ptr->src;
-	sourceMode = ptr->mode;
+        cntRef++;
+        Current.Line = ptr->line;
+        Current.File = ptr->file;
+        Current.Macro.Line = ptr->macroline;
+        Current.Macro.File = ptr->macrofile;
+        Current.Macro.invoked = ptr->macroinvoked;
+        Global.pc = ptr->pc;
+        //Current.var = ptr->var;
+        code.Ptr = ptr->codePtr;
+        Current.SrcPtr = ptr->src;
+        sourceMode = ptr->mode;
 
-	//mesg(Current.SrcPtr);
+        //mesg(Current.SrcPtr);
 
-	mainloop( 1 );
+        mainloop( 1 );
 
-	ptr->unknown = 0;
+        ptr->unknown = 0;
 
-	if ( ptr->down ){
-	  ptr->down->up = ptr->up;
-	}
-	if ( ptr->up ){
-	  ptr->up->down = ptr->down;
-	}
-	if ( ptr == refFirst ) refFirst = ptr->up;
-	if ( ptr == refLast ) refLast = ptr->down;
+        if ( ptr->down ){
+          ptr->down->up = ptr->up;
+        }
+        if ( ptr->up ){
+          ptr->up->down = ptr->down;
+        }
+        if ( ptr == refFirst ) refFirst = ptr->up;
+        if ( ptr == refLast ) refLast = ptr->down;
 
-	free(ptr);
+        free(ptr);
       }
       ptr = ptr1;
     }
@@ -761,7 +796,7 @@ int mainloop(int pass2)
 
     if ( !Current.pass2 && Current.ifFlag && Current.switchFlag && verbose){
       if ( verbose > 2 || (!Current.Macro.Processing && verbose > 1) )
-	printf("%4d:$%04"PRIx32": <%s>\n",Current.Line,Global.pc,srcLine);
+        printf("%4d:$%04"PRIx32": <%s>\n",Current.Line,Global.pc,srcLine);
     }
 
     if ( !atom ) continue;
@@ -783,20 +818,20 @@ int mainloop(int pass2)
     if ( (Current.Label.type & UNSURE) ){
 
       if ( checkCode(Current.Label.name,1 ) >= 0){
-	//	Warning("Opcode/Macro in first column !");
-	continue;
+        //      Warning("Opcode/Macro in first column !");
+        continue;
       }
       Current.Label.type = NORMAL;
     }
 
     if ( Current.Label.len &&
-	 !Current.pass2 &&
-	 !Current.Macro.Define &&
-	 Current.ifFlag &&
-	 Current.switchFlag){
+         !Current.pass2 &&
+         !Current.Macro.Define &&
+         Current.ifFlag &&
+         Current.switchFlag){
 
       if ( Global.genesis ){
-	Current.Label.type |= CODELABEL;
+        Current.Label.type |= CODELABEL;
       }
       Current.Label.value = Global.pc;
       Current.LabelPtr = DefineLabel( &Current.Label , &Current.doRef);
