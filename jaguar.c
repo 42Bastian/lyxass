@@ -37,6 +37,16 @@ extern int getdec32(int32_t *);
 
 extern int mac_mode;
 
+int32_t last_op = -1;
+int32_t last_pc = -1;
+
+void writeOp(short op)
+{
+  last_op = (op >> 10) & 0x3f;
+  last_pc = Global.pc;
+  writeWordBig(op);
+}
+
 int GetRegisterOrPC(int *reg)
 {
   extern int LabelTable[256];
@@ -157,8 +167,7 @@ int GetRegister(int *reg)
 
 int direct(int op)
 {
-  writeWordBig(op << 10);
-
+  writeOp(op << 10);
   return 0;
 }
 /*
@@ -176,7 +185,7 @@ int one_reg(int op)
   } else {
     op = (op << 10) | reg;
   }
-  writeWordBig( op );
+  writeOp( op );
 
   return 0;
 }
@@ -199,7 +208,7 @@ int two_reg(int op)
 
   op = ( op << 10 ) | ( reg1 << 5 ) | reg2;
 
-  writeWordBig( op );
+  writeOp( op );
   return 0;
 }
 /*
@@ -232,7 +241,7 @@ int imm_reg(int op)
 
   op = ( op << 10 ) | ( imm << 5) | reg;
 
-  writeWordBig( op );
+  writeOp( op );
 
   return 0;
 }
@@ -259,7 +268,7 @@ int imm2_reg(int op)
 
   op = ( op << 10 ) | ( imm << 5) | reg;
 
-  writeWordBig( op );
+  writeOp( op );
 
   return 0;
 }
@@ -288,7 +297,7 @@ int imm3_reg(int op)
 
   op = ( op << 10 ) | ( imm << 5) | reg;
 
-  writeWordBig( op );
+  writeOp( op );
 
   return 0;
 }
@@ -312,9 +321,13 @@ int imm4_reg(int op)
 
   if ( err == EXPR_UNSOLVED ) saveCurrentLine();
 
+  if ( last_op == 52 || last_op == 53 ){
+    Warning("MOVEI after JR/JUMP is unpredictable!");
+  }
+
   op = ( op << 10 ) | reg;
 
-  writeWordBig( op );
+  writeOp( op );
   writeWordBig( imm & 0xffff);
   writeWordBig( imm >> 16 );
 
@@ -404,7 +417,7 @@ int cond_rel(int op )
     op  |= (dist & 31) << 5;
   }
 
-  writeWordBig( op );
+  writeOp( op );
   return 0;
 }
 
@@ -432,7 +445,7 @@ int cond_abs(int op )
     writeWordBig((short)0xe400);
   }
 
-  writeWordBig( op );
+  writeOp( op );
   return 0;
 }
 
@@ -487,7 +500,7 @@ int load_reg(int op )
 
   op = ( op << 10 ) | ( reg1 << 5 ) | reg2;
 
-  writeWordBig( op );
+  writeOp( op );
 
   return 0;
 }
@@ -506,7 +519,7 @@ int load2_reg(int op )
 
   op = ( op << 10 ) | ( reg1 << 5 ) | reg2;
 
-  writeWordBig( op );
+  writeOp( op );
 
   return 0;
 }
@@ -562,7 +575,7 @@ int store_reg(int op )
   }
   op = ( op << 10 ) | ( reg2 << 5 ) | reg1;
 
-  writeWordBig( op );
+  writeOp( op );
 
   return 0;
 }
@@ -581,7 +594,7 @@ int store2_reg(int op )
 
   op = ( op << 10 ) | ( reg2 << 5 ) | reg1;
 
-  writeWordBig( op );
+  writeOp( op );
 
   return 0;
 }
