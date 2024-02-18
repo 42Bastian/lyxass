@@ -321,7 +321,7 @@ int imm4_reg(int op)
 
   if ( err == EXPR_UNSOLVED ) saveCurrentLine();
 
-  if ( last_op == 52 || last_op == 53 ){
+  if ( (last_op == 52 || last_op == 53) && last_pc == (Global.pc-2) ){
     Warning("MOVEI after JR/JUMP is unpredictable!");
   }
 
@@ -344,8 +344,10 @@ struct cond_s{
   {"C",8},{"CS",8},
   {"MI",0x18},{"N",0x18},
   {"PL",0x14},{"NN",0x14},
-  {"GT",0x15},
-  {"NN_NZ",0x15},{"NN_Z",0x16},{"N_NZ",0x19},{"N_Z",0x1a},
+  {"GT",0x15},{"NN_NZ",0x15},{"NN_NE",0x15},
+  {"NN_Z",0x16},{"NN_EQ",0x16},
+  {"N_NZ",0x19},{"N_NE",0x19},
+  {"N_Z",0x1a},{"N_EQ",0x1a},
   {"\0",0}
 };
 
@@ -402,9 +404,8 @@ int cond_rel(int op )
 
   if ( (Global.pc < 0xf03000) && (Global.pc & 3) ){
     Warning("JR not long-aligned ! NOP inserted !");
-    writeWordBig((short)0xe400);
+    writeOp(0xe400); /* NOP */
   }
-
 
   if ( err == EXPR_UNSOLVED ){
     saveCurrentLine();
@@ -442,7 +443,7 @@ int cond_abs(int op )
 
   if ( (Global.pc < 0xf03000) && (Global.pc & 3) ){
     Warning("JUMP not long-aligned ! NOP inserted !");
-    writeWordBig((short)0xe400);
+    writeOp((short)0xe400);
   }
 
   writeOp( op );
