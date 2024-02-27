@@ -200,7 +200,7 @@ int uni(int64_t *value)
 
   save = atom;
 
-  if ( atom == '-' || atom == '!' ||
+  if ( atom == '-' || atom == '!' || atom == '~' ||
        atom == '>' || atom == '<' ){
     GetAtom();
   }
@@ -287,6 +287,7 @@ int uni(int64_t *value)
   switch ( save ){
   case '-' : a = -a; break;
   case '!' : a = !a; break;
+  case '~' : a = ~a; break;
   case '<' : a = a & 0xff; break;
   case '>' : a = (a >> 8) & 0xff; break;
   }
