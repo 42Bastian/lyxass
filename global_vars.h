@@ -27,7 +27,7 @@
 
 #define MAX_INCLUDE     64
 #define MAX_IF          16
-#define MAX_CODE_SIZE   1024*1024
+#define MAX_CODE_SIZE   2*1024*1024
 
 #define EXPR_OK       0
 #define EXPR_ERROR    1
