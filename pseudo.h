@@ -11,6 +11,7 @@
 #include "opcode.h"
 
 int p_org(int);
+int p_porg(int);
 int p_run(int);
 int p_end(int);
 int p_setvar(int);
@@ -55,6 +56,7 @@ int p_regtop(int);
 
 const struct opcode_s pseudo[]={
     { "ORG",p_org,0 },
+    { "PORG",p_porg,0 },
     { "RUN",p_run,0 },
     { "END",p_end,0 },
     { "SETVAR",p_setvar,0},{ "SET@",p_setvar,0},
@@ -102,6 +104,6 @@ const struct opcode_s pseudo[]={
     { "EQUR",p_reg,1},{ "EQURUNDE",p_unreg,1},
     { "REGMAP", p_regmap,0},
     { "REGTOP", p_regtop,0},
-//->    { "MAC",p_macmode,1},{ "LYXASS",p_macmode,0},
+    { "MAC",p_macmode,1},{ "LYXASS",p_macmode,0},
     { "\0",0,0 }
 };

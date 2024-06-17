@@ -94,6 +94,24 @@ int p_org(int d)
 }
 /*
 
+  ORG
+
+*/
+int p_porg(int d)
+{
+  int32_t l;
+  int err;
+
+  if ( (err = NeedConst( &l, "ORG" )) ) return err;
+
+  Global.pc = (uint32_t)l;
+
+  return 0;
+}
+
+
+/*
+
   RUN
 
 */

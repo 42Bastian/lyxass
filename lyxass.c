@@ -40,7 +40,7 @@ extern REFERENCE *refFirst;
 extern REFERENCE *refLast;
 
 char info[] =
-  "tjass/lyxass C-version V 1.8.2 " __DATE__ "\n"
+  "tjass/lyxass C-version V 1.9.0 " __DATE__ "\n"
   "(c) 1993..2003/2022..2024 42Bastian Schick\n";
 
 /********************************************************************/
@@ -332,7 +332,8 @@ void help()
          "-------------- pseudo-opcodes\n"
          "                          Pseudos are case-insensitive !\n"
          "lynx,gpu,dsp            - switch to lynx,gpu or dsp mode\n"
-         "org                     - set pc\n"
+         "org                     - set pc (insert 0s if run was seen)\n"
+         "porg                    - set pc (do _not_ insert 0s)\n"
          "run                     - set pc, first run sets start address and\n"
          "                          enables code-generation\n"
          "end                     - take a guess !\n"
