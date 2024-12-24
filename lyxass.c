@@ -40,7 +40,7 @@ extern REFERENCE *refFirst;
 extern REFERENCE *refLast;
 
 char info[] =
-  "tjass/lyxass C-version V 1.9.0 " __DATE__ "\n"
+  "tjass/lyxass C-version V 1.9.1 " __DATE__ "\n"
   "(c) 1993..2003/2022..2024 42Bastian Schick\n";
 
 /********************************************************************/

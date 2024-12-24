@@ -729,7 +729,18 @@ int p_echo(int d)
 
   if ( !TestAtom('"') ) return Error(SYNTAX_ERR, __FUNCTION__);
 
-  if ( d ) fprintf(my_stderr,"FAIL: ");
+  if ( d ) {
+    if (Current.File >= 0){
+      if ( Current.Macro.Line ){
+        fprintf(my_stderr,"FAIL: %s:%d:Macro-Line %5d:<%s>:",
+                file_list[Current.File].name,Current.Line,
+                Current.Macro.Line,file_list[Current.Macro.File].name);
+      }
+    } else {
+      fprintf(my_stderr,"FAIL: %s:%5d :",
+              file_list[Current.File].name,Current.Line);
+    }
+  }
 
   while ( atom != '"' ){
     if ( atom == '%' && next_atom != '%'){

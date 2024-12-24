@@ -37,12 +37,12 @@ int Error(int err_num,const char *s)
   }
 
   if (Current.File >= 0){
-    if ( Current.Macro.Line ){
-      fprintf(my_stderr,"ERROR: %s;%d:Macro-Line %5d:<%s>: '%s'\n",
+    if ( Current.Macro.Line && err_num != FAIL_ERR ){
+      fprintf(my_stderr,"ERROR: %s:%d:Macro-Line %5d:<%s>: '%s'\n",
 	      file_list[Current.File].name,Current.Line,
 	      Current.Macro.Line,file_list[Current.Macro.File].name,
               srcLine);
-    } else {
+    } else if ( err_num != FAIL_ERR ) {
       fprintf(my_stderr,"ERROR: %s:%5d: '%s'\n",
               file_list[Current.File].name,Current.Line, srcLine);
     }

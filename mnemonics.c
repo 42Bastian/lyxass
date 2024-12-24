@@ -460,7 +460,7 @@ int opa(int op)
   int32_t l;
 
   KillSpace();
-  if ( !atom ){
+  if ( !atom || op == 0x1a || op == 0x3a ){
     op |= 8;
     if ( op >= 0xca ) op ^= 0xf0;
     writeConstByte(op);
