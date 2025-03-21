@@ -40,11 +40,11 @@ extern REFERENCE *refFirst;
 extern REFERENCE *refLast;
 
 char info[] =
-  "tjass/lyxass C-version V 1.9.2 " __DATE__ "\n"
-  "(c) 1993..2003/2022..2024 42Bastian Schick\n";
+  "tjass/lyxass C-version V 1.9.3 " __DATE__ "\n"
+  "(c) 1993..2003/2022..2025 42Bastian Schick\n";
 
 /********************************************************************/
-char *outfile = 0;
+char *outfile = NULL;
 
 int warning = 0;
 int verbose = 0;
@@ -412,7 +412,7 @@ void CommandLine(int *_argc, char **_argv)
       --argc;
       ++argv;
       c_arg++;
-      outfile = my_malloc((long)strlen(*argv));
+      outfile = my_malloc((long)strlen(*argv)+1);
       strcpy(outfile,*argv);
       break;
     case 'v':

@@ -738,7 +738,7 @@ int p_echo(int d)
       }
     } else {
       fprintf(my_stderr,"FAIL: %s:%5d :",
-              file_list[Current.File].name,Current.Line);
+              Current.File >= 0 ? file_list[Current.File].name:"",Current.Line);
     }
   }
 
