@@ -459,7 +459,7 @@ int cond_abs(int op )
 
 int load_reg(int op )
 {
-  int reg1,reg2;
+  int reg1,reg2,save_reg1;
   int save = 0;
 
   if ( !TestAtom('(') ) return Error(SYNTAX_ERR,"");
@@ -472,7 +472,9 @@ int load_reg(int op )
     if ( atom != '+' ) return Error(SYNTAX_ERR,"");
     GetAtom();
     op = 58;
-    if ( (reg1 -= 14) < 0 || reg1 > 1 ) return Error(SYNTAX_ERR,"");
+    save_reg1 = reg1;
+    reg1 -= 14;
+    if ( reg1  < 0 || reg1 > 1 ) return Error(SYNTAX_ERR,"");
     op += reg1;
 
     SavePosition();
@@ -493,9 +495,15 @@ int load_reg(int op )
         if ( (l & 3) ) return Error(IMM_ERR,"x % 4 != 0");
         l >>= 2;
       }
-      if ( l < 1 || l > 32 ) return Error(IMM_ERR,"4<=x<=128");
-      reg1 = l == 32 ? 0 : l;
-      op -= 15;
+      if ( l == 0 ){
+        op = 41;
+        reg1 = save_reg1;
+        Warning("Index 0, using non-indexed LOAD");
+      } else {
+        if ( l < 0 || l > 32 ) return Error(IMM_ERR,"4<=x<=128");
+        reg1 = l == 32 ? 0 : l;
+        op -= 15;
+      }
     }
     if ( !TestAtom(')') ) return Error(SYNTAX_ERR,"");
   }
@@ -533,7 +541,7 @@ int load2_reg(int op )
 }
 int store_reg(int op )
 {
-  int reg1,reg2;
+  int reg1,reg2, save_reg2;
 
   if ( GetRegister( &reg1 ) ) return 1;
 
@@ -556,6 +564,8 @@ int store_reg(int op )
 
     op += (reg2 - 14);
 
+    save_reg2 = reg2;
+
     SavePosition();
 
     if ( GetRegister( &reg2 ) ){
@@ -574,10 +584,14 @@ int store_reg(int op )
         if ( (l & 3) ) return Error(IMM_ERR,"x % 4 != 0");
         l >>= 2;
       }
-      if ( l < 1 || l > 32 ) return Error(IMM_ERR,"4<=x<=128");
-
-      reg2 = l == 32 ? 0 : l;
-
+      if ( l == 0 ){
+        op = 47;
+        reg2 = save_reg2;
+        Warning("Offest 0 using STORE w/o index");
+      } else {
+        if ( l < 0 || l > 32 ) return Error(IMM_ERR,"4<=x<=128");
+        reg2 = l == 32 ? 0 : l;
+      }
     }
     if ( !TestAtom(')')) return Error(SYNTAX_ERR,"");
   }
