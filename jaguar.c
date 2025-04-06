@@ -144,6 +144,8 @@ int GetRegister(int *reg)
 
   if (regL2->type != REGISTER ) return -1;
 
+  if (regL2->value == -1 ) return Error(REG_ERR,"");
+
   if ( regL2->len > 2 ){
     *p++ = 'r';
     *p++ = (char)(regL2->value / 10 + '0');

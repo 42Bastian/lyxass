@@ -40,14 +40,19 @@ extern int verbose;
 
 // keep track if a register is used
 typedef struct regLabel {
-  int reg_flag[32*2];
-  int reg_line[32*2];
-  int reg_file[32*2];
-  label_t *reg_label[32*2];
-  int regAllocStart;
+  int flag;
+  int line;
+  int file;
+  label_t *label;
+  int refCount;
 } regLabel_t;
 
-regLabel_t risc[2] = {
+typedef struct regLabelList_s {
+  regLabel_t regs[32*2];
+  int regAllocStart;
+} regLabelList_t;
+
+regLabelList_t risc[2] = {
   {.regAllocStart = 29 },
   {.regAllocStart = 29 }
 };
@@ -917,15 +922,23 @@ int p_regmap(int dummy)
     fprintf(my_stderr,"Reg %-32s %-32s\n","Bank0 - DSP","Bank 1 - DSP");
   }
   for(i = 31; i >= 0; --i ){
-    if ( risc[jaguar_mode].reg_flag[i] || risc[jaguar_mode].reg_flag[i+32] ){
+    if ( risc[jaguar_mode].regs[i].flag || risc[jaguar_mode].regs[i+32].flag ){
       fprintf(my_stderr," %2d ",i);
-      if ( risc[jaguar_mode].reg_flag[i] ){
-        fprintf(my_stderr, "%-32s ",risc[jaguar_mode].reg_label[i]->name);
+      if ( risc[jaguar_mode].regs[i].flag ) {
+        if ( risc[jaguar_mode].regs[i].label){
+          fprintf(my_stderr, "%-32s ",risc[jaguar_mode].regs[i].label->name);
+        } else {
+          fprintf(my_stderr, "%-32s ","<N/A>");
+        }
       } else {
         fprintf(my_stderr, "%-32s "," ");
       }
-      if ( risc[jaguar_mode].reg_flag[i+32] ){
-        fprintf(my_stderr, "%-32s ",risc[jaguar_mode].reg_label[i+32]->name);
+      if ( risc[jaguar_mode].regs[i+32].flag ){
+        if ( risc[jaguar_mode].regs[i+32].label){
+          fprintf(my_stderr, "%-32s ",risc[jaguar_mode].regs[i+32].label->name);
+        } else {
+          fprintf(my_stderr, "%-32s ","<N/A>");
+        }
       } else {
         fprintf(my_stderr, "%-32s "," ");
       }
@@ -982,7 +995,7 @@ int p_reg(int d)
     }
     o = -1;
     for( ; i >= end; --i){
-      if ( risc[jaguar_mode].reg_flag[i] == 0 ){
+      if ( risc[jaguar_mode].regs[i].flag == 0 ){
         o = i;
         l = o & 31;
         break;
@@ -993,19 +1006,20 @@ int p_reg(int d)
     }
   }
 
-  if ( risc[jaguar_mode].reg_flag[o] && allowRedefine == 0 ) {
+  if ( risc[jaguar_mode].regs[o].flag && allowRedefine == 0 ) {
     char help[256];
     sprintf(help,"Register already defined: %s:%5d",
-            file_list[risc[jaguar_mode].reg_file[o]].name,
-            risc[jaguar_mode].reg_line[o]);
+            file_list[risc[jaguar_mode].regs[o].file].name,
+            risc[jaguar_mode].regs[o].line);
 
     Warning(help);
   }
 
-  risc[jaguar_mode].reg_flag[o] = 1;
-  risc[jaguar_mode].reg_file[o] = Current.File;
-  risc[jaguar_mode].reg_line[o] = Current.Line;
-  risc[jaguar_mode].reg_label[o] = Current.LabelPtr;
+  risc[jaguar_mode].regs[o].flag = 1;
+  risc[jaguar_mode].regs[o].file = Current.File;
+  risc[jaguar_mode].regs[o].line = Current.Line;
+  risc[jaguar_mode].regs[o].label = Current.LabelPtr;
+  ++risc[jaguar_mode].regs[o].refCount;
   Current.LabelPtr->file = Current.File;
   Current.LabelPtr->type = REGISTER;
   Current.LabelPtr->value = l;
@@ -1051,10 +1065,13 @@ int p_unreg(int d)
            plabel->name[i-1] == 'a'){
         o += 32;
       }
-      risc[jaguar_mode].reg_flag[o] = 0;
-      risc[jaguar_mode].reg_line[o] = 0;
-      risc[jaguar_mode].reg_file[o] = 0;
-      risc[jaguar_mode].reg_label[o] = NULL;
+      --risc[jaguar_mode].regs[o].refCount;
+      if ( risc[jaguar_mode].regs[o].refCount == 0 ){
+        risc[jaguar_mode].regs[o].flag = 0;
+      }
+      risc[jaguar_mode].regs[o].line = 0;
+      risc[jaguar_mode].regs[o].file = 0;
+      risc[jaguar_mode].regs[o].label = NULL;
     }
 
   }while (TestAtom(','));
