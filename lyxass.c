@@ -40,7 +40,7 @@ extern REFERENCE *refFirst;
 extern REFERENCE *refLast;
 
 char info[] =
-  "tjass/lyxass C-version V 1.11.1 " __DATE__ "\n"
+  "tjass/lyxass C-version V 1.12.0 " __DATE__ "\n"
   "(c) 1993..2003/2022..2025 42Bastian Schick\n";
 
 /********************************************************************/
@@ -392,8 +392,7 @@ void help()
          "-------------- comments\n"
          "Allowed are\n"
          "# or * in the first column\n"
-         "C++-style, or //\n"
-         ";\n"
+         "C++ // or C /* */ or simple ';'\n"
   );
 }
 

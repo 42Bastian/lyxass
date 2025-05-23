@@ -47,13 +47,16 @@ int LoadSource(char fn[])
 {
   FILE *f;
 
+
   ConvertFilename(fn);
 
   f = fopen(fn,"r");
 
   if ( f != NULL ){
     char * ptr, *ptr_end;
+    int comment;
 
+    comment = 0;
     ptr = loadBuffer;
 
     ptr_end = ptr + LOAD_BUFFER_SIZE - 256;
@@ -71,15 +74,26 @@ int LoadSource(char fn[])
       ptrLine = line;
       // remove comment
       c = *ptrLine++;
-      if (c == '*' || c == '#' )  {
+      if (comment == 0 && (c == '*' || c == '#') )  {
         *ptr++ = '\n';
       } else {
-        while ( c ){
+        for( ; c ; c = *ptrLine++){
           // skip CR
           if ( c == '\r' ) {
             c = *ptrLine++;
           }
-
+          if ( comment ) {
+            if ( c == '*' && *ptrLine == '/' ){
+              ++ptrLine;
+              comment = 0;
+            }
+            continue;
+          }
+          if ( c == '/' && *ptrLine == '*' ){
+            comment = 1;
+            ++ptrLine;
+            continue;
+          }
           // comment ? => finished
           if ( c == ';' || (c == '/' && *ptrLine == '/') ){
             if ( *(ptr-1) == ' ' ){
@@ -111,7 +125,6 @@ int LoadSource(char fn[])
             ++ptrLine;
           }
           *ptr++ = c;
-          c = *ptrLine++;
         }
       } // if ( c == '*' || c == '#' )
     } // while
