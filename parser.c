@@ -71,7 +71,7 @@ int LoadSource(char fn[])
       ptrLine = line;
       // remove comment
       c = *ptrLine++;
-      if (c == '*' )  {
+      if (c == '*' || c == '#' )  {
         *ptr++ = '\n';
       } else {
         while ( c ){
@@ -113,7 +113,7 @@ int LoadSource(char fn[])
           *ptr++ = c;
           c = *ptrLine++;
         }
-      } // if ( c == '*' )
+      } // if ( c == '*' || c == '#' )
     } // while
 
     while( *(ptr-2) == ' ' ){

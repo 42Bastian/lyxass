@@ -40,7 +40,7 @@ extern REFERENCE *refFirst;
 extern REFERENCE *refLast;
 
 char info[] =
-  "tjass/lyxass C-version V 1.11.0 " __DATE__ "\n"
+  "tjass/lyxass C-version V 1.11.1 " __DATE__ "\n"
   "(c) 1993..2003/2022..2025 42Bastian Schick\n";
 
 /********************************************************************/
@@ -389,6 +389,11 @@ void help()
          "There are no symbolic macro-parameters, but \\0..\\15 are replaced\n"
          "by the correponding parameter. Empty parameters are allowed.\n"
          "To protect commas you can surround a parameter with braces\n"
+         "-------------- comments\n"
+         "Allowed are\n"
+         "# or * in the first column\n"
+         "C++-style, or //\n"
+         ";\n"
   );
 }
 
