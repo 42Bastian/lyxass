@@ -12,6 +12,7 @@
 #define LOAD_BUFFER_SIZE (1024*1024)  // hope this is enough
 
 extern void ConvertFilename(char *);
+extern int noCcomment;
 
 int ch;
 int next_ch;
@@ -89,7 +90,7 @@ int LoadSource(char fn[])
             }
             continue;
           }
-          if ( c == '/' && *ptrLine == '*' ){
+          if ( (noCcomment == 0) && (c == '/' && *ptrLine == '*') ){
             comment = 1;
             ++ptrLine;
             continue;

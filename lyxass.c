@@ -35,12 +35,11 @@ int mainloop(int );
 
 int uni(int64_t *);
 
-
 extern REFERENCE *refFirst;
 extern REFERENCE *refLast;
 
-char info[] =
-  "tjass/lyxass C-version V 1.12.0 " __DATE__ "\n"
+const char info[] =
+  "tjass/lyxass C-version V 1.12.1 " __DATE__ "\n"
   "(c) 1993..2003/2022..2025 42Bastian Schick\n";
 
 /********************************************************************/
@@ -57,6 +56,7 @@ int cntError = 0;     /* # of errors */
 int cntWarning = 0;   /* # of warning */
 int cntMacroExpand = 0;
 int cntRef = 0;
+int noCcomment = 0;
 FILE *my_stderr;      /* handle for error-output */
 /***************************************************************
  * Malloc
@@ -329,6 +329,7 @@ void help()
          "-r                         - dump global symbols\n"
          "-x value                   - set run address (no need for RUN statement)\n"
          "-t[l|g|d]                  - Target (l)YNX (default), (g)PU or (d)SP\n"
+         "-nc                        - disable /* */ comment handling\n"
          "-------------- pseudo-opcodes\n"
          "                            Pseudos are case-insensitive !\n"
          "lynx,gpu,dsp               - switch to lynx,gpu or dsp mode\n"
@@ -412,6 +413,13 @@ void CommandLine(int *_argc, char **_argv)
     char *s = *argv;
     if ( s[0] != '-' ) break;
     switch ( argv[0][1] ){
+    case 'n':
+      if ( argv[0][2] == 'c' ){
+        noCcomment = 1;
+      } else {
+        Error(-CMD_ERR,"");
+      }
+      break;
     case 'o':
       --argc;
       ++argv;
