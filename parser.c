@@ -113,7 +113,6 @@ int LoadSource(char fn[])
               c = *ptrLine++;
             }while ( c && c != end );
             *ptr++ = c;
-            c = *ptrLine++;
             continue;
           }
 
