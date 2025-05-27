@@ -1,7 +1,7 @@
 CC=gcc
 
 CFLAGS=  -Wall -O2 -fomit-frame-pointer
-LDFLAGS=
+LDFLAGS=-Wl,-max_default_common_align,0x4000
 
 all: lyxass
 

@@ -48,13 +48,12 @@ int LoadSource(char fn[])
 {
   FILE *f;
 
-
   ConvertFilename(fn);
 
   f = fopen(fn,"r");
 
   if ( f != NULL ){
-    char * ptr, *ptr_end;
+    char * ptr, *ptr_end, *ptr_start;
     int comment;
 
     comment = 0;
@@ -72,6 +71,7 @@ int LoadSource(char fn[])
       if ( fgets(line,254,f) == NULL ){
         break;
       }
+      ptr_start = ptr;
       ptrLine = line;
       // remove comment
       c = *ptrLine++;
@@ -127,6 +127,10 @@ int LoadSource(char fn[])
           *ptr++ = c;
         }
       } // if ( c == '*' || c == '#' )
+      if ( ptr == ptr_start ){
+        *ptr++ = '\n';
+      }
+
     } // while
 
     while( *(ptr-2) == ' ' ){
