@@ -1,7 +1,10 @@
 CC=gcc
 
-CFLAGS=  -Wall -O2 -fomit-frame-pointer
-LDFLAGS=-Wl,-max_default_common_align,0x4000
+CFLAGS= -Wall -O2 -fomit-frame-pointer
+LDFLAGS=
+ifeq ($(findstring darwin,$(OSTYPE)),darwin)
+LDFLAGS+=-Wl,-max_default_common_align,0x4000
+endif
 
 all: lyxass
 
