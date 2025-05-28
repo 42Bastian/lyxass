@@ -38,8 +38,10 @@ int uni(int64_t *);
 extern REFERENCE *refFirst;
 extern REFERENCE *refLast;
 
+#define VERSION 0x00011203
+
 const char info[] =
-  "tjass/lyxass C-version V 1.12.2 " __DATE__ "\n"
+  "tjass/lyxass C-version V 1.12.3 " __DATE__ "\n"
   "(c) 1993..2003/2022..2025 42Bastian Schick\n";
 
 /********************************************************************/
@@ -528,14 +530,10 @@ void CommandLine(int *_argc, char **_argv)
 
 }
 
-struct label_s _cycles = {
-  6,NORMAL,0,0,0,0,NULL,(label_t *)0,
-  (label_t *)0,"CYCLES"
-};
-
 int main(int argc, char **argv)
 {
   // init
+  label_t * l;
 
   my_stderr = stdout; //stderr;
   chgPathToUpper = 0;
@@ -560,13 +558,11 @@ int main(int argc, char **argv)
 
   CommandLine( &argc, argv );
 
-  {
-    int solved;
-    label_t * l;
-    l=DefineLabel(&_cycles, &solved);
-    l->type |= VARIABLE;
-    p_cycles = (uint32_t *)&l->value;
-  }
+  l = newSymbol("CYCLES", 0);
+  l->type |= VARIABLE;
+  p_cycles = (uint32_t *)&l->value;
+
+  l = newSymbol("__LYXASS__", VERSION);
 
   /*
   if ( argc != 2 ) {

@@ -41,4 +41,5 @@ void DumpLocals();
 void InitLabels();
 void writeSymbols(char *, int hex);
 void ClearLocals();
+label_t * newSymbol(const char *name, uint64_t value);
 #endif /* _LABLE_H_ */

@@ -474,3 +474,18 @@ void DumpMacros()
             next->name,next->line,file_list[next->file].name);
   }
 }
+
+label_t * newSymbol(const char *name, uint64_t value)
+{
+  label_t label = {0};
+  int solved;
+
+  label.value = value;
+  label.type = NORMAL;
+  strcpy(label.name, name);
+  label.len   = strlen(name);
+  label.file  = 0;
+  label.line  = 0;
+
+  return DefineLabel(&label, &solved);
+}
