@@ -38,10 +38,10 @@ int uni(int64_t *);
 extern REFERENCE *refFirst;
 extern REFERENCE *refLast;
 
-#define VERSION 0x00011203
+#define VERSION 0x00011300
 
 const char info[] =
-  "tjass/lyxass C-version V 1.12.3 " __DATE__ "\n"
+  "tjass/lyxass C-version V 1.13.0 " __DATE__ "\n"
   "(c) 1993..2003/2022..2025 42Bastian Schick\n";
 
 /********************************************************************/
@@ -388,6 +388,14 @@ void help()
          " Macro-labels start with \".\\\".\n"
          " Macro-names follow the rules for normal labels.\n"
          " Special label 'CYCLES' counts the opcode cycles and can be set/reset with 'set'\n"
+         "\n"
+         "-------------- expressions\n"
+         " Expression are calculated as int64 and follow C rules for operator\n"
+         "precedence.\n"
+         "There may be functions inside expressions:\n"
+         "SQRT(value)\n"
+         "ABS(value)\n"
+         "\n"
          "-------------- macros\n"
          "There are no symbolic macro-parameters, but \\0..\\15 are replaced\n"
          "by the correponding parameter. Empty parameters are allowed.\n"
@@ -450,7 +458,7 @@ void CommandLine(int *_argc, char **_argv)
 
         atom = ' ';
 
-        if ( GetLabel( &label ) ) Error(-CMD_ERR,"");
+        if ( GetLabel( &label, NO_COLON ) ) Error(-CMD_ERR,"");
         label.value = 1;
         label.type = NORMAL;
         if ( TestAtom('=') ){
@@ -820,7 +828,7 @@ int mainloop(int pass2)
       continue;
     }
 
-    if ( GetLabel( & Current.Label ) ){
+    if ( GetLabel( & Current.Label, W_COLON ) ){
       Error(LABEL_ERR,"");
       continue;
     }

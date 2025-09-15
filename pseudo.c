@@ -190,7 +190,7 @@ int p_macro(int d)
 
   //  KillSpace();
 
-  if ( GetLabel( &macroLabel ) ) return 1;
+  if ( GetLabel( &macroLabel, NO_COLON ) ) return 1;
   if ( ! macroLabel.len)  return 1;
 
   return DefineMacro( macroLabel.name );
@@ -552,7 +552,7 @@ int p_ifdef(int d)
 
   if ( Current.ifFlag ) {
 
-    if ( GetLabel( &test ) ) return 1;
+    if ( GetLabel( &test, NO_COLON ) ) return 1;
 
     Current.ifFlag = (FindLabel( &test, &l ) != 0);
 
@@ -577,7 +577,7 @@ int p_ifundef(int d)
   PUSH_IF();
 
   if ( Current.ifFlag ) {
-    if ( GetLabel( &test ) ) return 1;
+    if ( GetLabel( &test, NO_COLON ) ) return 1;
     Current.ifFlag = (FindLabel( &test, &l ) == 0);
     Current.ParseOnly = 0;
   } else {
@@ -765,7 +765,7 @@ int p_echo(int d)
       }
       GetAtom();
 
-      if ( GetLabel( &label) ) return 1;
+      if ( GetLabel( &label, NO_COLON) ) return 1;
 
       FindLabel( &label, &l );
 
@@ -861,7 +861,7 @@ int p_global(int d)
 
   do{
 
-    if ( GetLabel( &label ) ) return 1;
+    if ( GetLabel( &label, NO_COLON ) ) return 1;
 
     if ( (plabel = FindLabel( &label, &l)) == NULL ){
       int solved;
@@ -1039,7 +1039,7 @@ int p_unreg(int d)
   int32_t l;
 
   do{
-    if ( GetLabel( &label ) ) return 1;
+    if ( GetLabel( &label, NO_COLON ) ) return 1;
 
     if ( (plabel = FindLabel( &label, &l)) == NULL ){
       return Error(SYNTAX_ERR,"");

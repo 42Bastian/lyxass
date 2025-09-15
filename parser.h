@@ -24,7 +24,10 @@ int TestAtomOR(int x, int y);
 int GetLine();
 void killLine(void);
 int KillSpace();
-int GetLabel(label_t *Label);
+int GetLabel(label_t *Label, int colon);
+#define NO_COLON 0
+#define W_COLON (!NO_COLON)
+
 int GetCmd(void);
 int GetComment(void);
 int CheckForComma(void);

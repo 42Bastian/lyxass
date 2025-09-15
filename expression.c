@@ -13,12 +13,24 @@
 #include <string.h>
 #include <ctype.h>
 #include <inttypes.h>
+#include <math.h>
+#include <stdlib.h>
 
 #include "my.h"
 #include "label.h"
 #include "error.h"
 #include "global_vars.h"
 #include "parser.h"
+#include "opcode.h"
+
+int e_sqrt(int64_t *value);
+int e_abs(int64_t *value);
+
+const struct opcode_s functions[]={
+  { "SQRT",(int (*)(int))e_sqrt,0 },
+  { "ABS",(int (*)(int))e_abs,0 },
+  { "\0",0,0 }
+};
 
 int Expression64(int64_t * value);
 int sum(int64_t *value);
@@ -157,12 +169,76 @@ int getbin(int64_t *value)
   return EXPR_OK;
 }
 
+int e_sqrt(int64_t *value)
+{
+  int err;
+  int64_t a;
+  err = sum(&a);
+  if ( err == EXPR_OK ){
+    *value = (int64_t)sqrtf((float)llabs(a));
+  }
+  return err;
+}
+
+int e_abs(int64_t *value)
+{
+  int err;
+  int64_t a;
+  err = sum(&a);
+  if ( err == EXPR_OK ){
+    *value = llabs(a);
+  }
+  return err;
+}
+
+int SearchFunc(const struct opcode_s *list,
+               const char *s,
+               int (**fun)(int64_t *),
+               int *para)
+{
+  const struct opcode_s *curr;
+
+  curr = list;
+
+  while ( curr->name[0] ){
+    if ( !strcasecmp(curr->name,s) ){
+      //      printf("Found (%s)\n",curr->name);
+      *fun = (int (*)(int64_t *))curr->func;
+      *para = curr->misc;
+      return 1;
+    }
+    curr++;
+  }
+  return -1;
+}
+
 int getlabel(int64_t *value)
 {
   int32_t lv = 0;
   int dummy;
 
-  if ( GetLabel( &expr_label) ) return EXPR_ERROR;
+  if ( GetLabel( &expr_label, NO_COLON) ) return EXPR_ERROR;
+
+  if ( atom == '(' ) {
+    int (*fun)(int64_t *);
+    int para;
+    int64_t a = 0;
+    int err;
+    GetAtom();
+
+    if ( SearchFunc(functions, expr_label.name, &fun, &para) < 0 ) {
+      return EXPR_ERROR;
+    }
+    err = fun(&a);
+
+    if ( !TestAtom(')') ){
+      return Error(EXPR_ERR,"");
+    }
+    if ( err == EXPR_OK ){
+      *value = a;
+    }
+    return err;
+  }
 
   expr_label.type &= ~UNSURE;
 

@@ -7,7 +7,7 @@
 #include "label.h"
 #include "global_vars.h"
 #include "error.h"
-
+#include "parser.h"
 
 #define LOAD_BUFFER_SIZE (1024*1024)  // hope this is enough
 
@@ -33,11 +33,11 @@ int GetChar();
 char * InsertMacroVar(char *ptr,int var);
 int GetLine();
 
-int GetAtom(void);
-int KillSpace(void);
-int GetCmd(void);
-int GetComment(void);
-int GetLabel(label_t *Label);
+//->int GetAtom(void);
+//->int KillSpace(void);
+//->int GetCmd(void);
+//->int GetComment(void);
+//->int GetLabel(label_t *Label);
 
 /********************************************/
 /* get a source-file and add it to the list */
@@ -434,7 +434,7 @@ int GetFileName()
 // 3. local  : . + alphanum
 // 4. macro  : .\ + alphanum
 //
-int GetLabel(label_t *Label)
+int GetLabel(label_t *Label, int colon)
 {
   extern int LabelTable[256];
   extern int mac_mode;
@@ -525,7 +525,7 @@ int GetLabel(label_t *Label)
         int32_t l;
 
         GetAtom();
-        if ( GetLabel( &label ) ) return 1;
+        if ( GetLabel( &label, NO_COLON ) ) return 1;
         if ( !FindLabel( &label, &l) ) return 1;
 
         sprintf(help,"%08X",l);
@@ -552,6 +552,9 @@ int GetLabel(label_t *Label)
   if ( len == 0 ) return 1; //Error(LABEL_ERR,"");
 
   if ( atom == ':' ){
+    if ( colon == NO_COLON ){
+      return Error(SYNTAX_ERR,"colon after label reference");
+    }
     GetAtom();
     if ( !(Label->type & NORMAL) && !mac_mode ) return Error(LABEL_ERR,"");
 

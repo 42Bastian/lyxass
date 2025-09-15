@@ -81,7 +81,7 @@ int GetRegisterOrPC(int *reg)
 
   p = srcLinePtr - 1;
 
-  if ( GetLabel(&regL) ) return 1;
+  if ( GetLabel(&regL, NO_COLON) ) return 1;
 
   if ( (regL2 = FindLabel(&regL, &solved)) == NULL ) return Error(REG_ERR,"");
 
@@ -132,7 +132,7 @@ int GetRegister(int *reg)
 
   p = srcLinePtr - 1;
 
-  if ( GetLabel(&regL) ) return 1;
+  if ( GetLabel(&regL, NO_COLON) ) return 1;
 
   if ( (regL2 = FindLabel(&regL, &solved)) == NULL ){
 #if 0 /* allow pass 2 resolving */
@@ -369,7 +369,7 @@ int GetCondition(int *cond)
   char *save_srcLinePtr = srcLinePtr-1;
 
   *cond = 0;
-  if ( GetLabel(&condition) ) return 0;
+  if ( GetLabel(&condition, NO_COLON) ) return 0;
 
   if ( condition.type != (UNSURE|NORMAL) ){
     srcLinePtr = save_srcLinePtr;
