@@ -51,7 +51,7 @@ OBJ = $(SRC:.c=.o)
 -include $(SRC:.c=.P)
 
 lyxass: $(OBJ)
-	$(CC) $(LDFLAGS) $(OBJ) -o $@
+	$(CC) $(LDFLAGS) $(OBJ) -lm -o $@
 
 .PHONY: install
 install: lyxass
