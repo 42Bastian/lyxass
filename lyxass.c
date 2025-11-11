@@ -41,7 +41,7 @@ extern REFERENCE *refLast;
 #define VERSION 0x00011300
 
 const char info[] =
-  "tjass/lyxass C-version V 1.13.0 " __DATE__ "\n"
+  "tjass/lyxass C-version V 1.13.1 " __DATE__ "\n"
   "(c) 1993..2003/2022..2025 42Bastian Schick\n";
 
 /********************************************************************/
@@ -396,6 +396,9 @@ void help()
          "SQRT(value)\n"
          "ABS(value)\n"
          "\n"
+         "-------------- Jaguar condition codes\n"
+         "Base: Z,EQ, NZ,NE, C,NC N,PL NN,MI\n"
+         "Combos with underscore, eg MI_Z\n"
          "-------------- macros\n"
          "There are no symbolic macro-parameters, but \\0..\\15 are replaced\n"
          "by the correponding parameter. Empty parameters are allowed.\n"
