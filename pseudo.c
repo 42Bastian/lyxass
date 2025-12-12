@@ -1045,7 +1045,6 @@ int p_unreg(int d)
       return Error(SYNTAX_ERR,"");
     } else {
       int i,o;
-
       //      printf("UNREG : %s\n",plabel->name);
 
       if ( !(plabel->type & REGISTER) ) return Error(SYNTAX_ERR,"");
@@ -1054,24 +1053,25 @@ int p_unreg(int d)
         char help[80];
         sprintf(help,"Multiple UNREG on (%s)!",plabel->name);
         Warning(help);
-      }
+      } else {
+        plabel->file = -1;
+        plabel->value = -1;
+        o = l;
+        i = (int)strlen(plabel->name);
+        if ( i > 2 &&
+             plabel->name[i-2] == '.' &&
+             plabel->name[i-1] == 'a'){
+          o += 32;
+        }
 
-      plabel->file = -1;
-      plabel->value = -1;
-      o = l;
-      i = (int)strlen(plabel->name);
-      if ( i > 2 &&
-           plabel->name[i-2] == '.' &&
-           plabel->name[i-1] == 'a'){
-        o += 32;
+        --risc[jaguar_mode].regs[o].refCount;
+        if ( risc[jaguar_mode].regs[o].refCount == 0 ){
+          risc[jaguar_mode].regs[o].flag = 0;
+        }
+        risc[jaguar_mode].regs[o].line = 0;
+        risc[jaguar_mode].regs[o].file = 0;
+        risc[jaguar_mode].regs[o].label = NULL;
       }
-      --risc[jaguar_mode].regs[o].refCount;
-      if ( risc[jaguar_mode].regs[o].refCount == 0 ){
-        risc[jaguar_mode].regs[o].flag = 0;
-      }
-      risc[jaguar_mode].regs[o].line = 0;
-      risc[jaguar_mode].regs[o].file = 0;
-      risc[jaguar_mode].regs[o].label = NULL;
     }
 
   }while (TestAtom(','));

@@ -41,7 +41,7 @@ extern REFERENCE *refLast;
 #define VERSION 0x00011300
 
 const char info[] =
-  "tjass/lyxass C-version V 1.13.1 " __DATE__ "\n"
+  "tjass/lyxass C-version V 1.13.2 " __DATE__ "\n"
   "(c) 1993..2003/2022..2025 42Bastian Schick\n";
 
 /********************************************************************/
