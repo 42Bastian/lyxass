@@ -587,7 +587,16 @@ int GetCmd(void)
   Current.CmdLen = 0;
 
   if ( KillSpace() ){
-    if (isalpha(atom) || atom == '_' || atom == '.' )
+    /* Hack: Replace = by EQU */
+    if ( atom == '=' ){
+      GetAtom();
+      if ( atom == ' ' ){
+        *ptr++ = 'E';
+        *ptr++ = 'Q';
+        *ptr++ = 'U';
+        len = 3;
+      }
+    } else if (isalpha(atom) || atom == '_' || atom == '.' )
       do{
         *ptr++ = atom;
         len++;

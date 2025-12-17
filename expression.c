@@ -476,6 +476,7 @@ int Expression64(int64_t * value)
   switch ( atom ){
   case '=':
     GetAtom();
+    if ( atom == '=' ) GetAtom(); /* allow C style == */
     if ( (err = sum( &v2 )) != EXPR_OK ) return err;
     *value = (v1 == v2);
     break;

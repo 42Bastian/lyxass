@@ -252,6 +252,35 @@ int p_definebyte(int d)
 }
 /*
 
+  DCB.B,DBB
+
+*/
+int p_definebyteblock(int d)
+{
+  int err;
+  int32_t v;
+  int32_t count;
+  int all_err = 0;
+
+  KillSpace();
+  if ( atom == EOF ) return Error(SYNTAX_ERR,"");
+
+  if ( (err = NeedConst( &v, "DCB.B" )) ) return err;
+  //  if ( (err = Expression( &v )) == EXPR_ERROR ) return 1;
+  // if ( err == EXPR_UNSOLVED ) ++all_err;
+  if ( v < -128 || v > 255 ) return Error(BYTE_ERR,"");
+  if ( !TestAtom(',') ) return Error(SYNTAX_ERR,"");
+  if ( (err = NeedConst( &count, "DCB.B" )) ) return err;
+  if ( count <= 0 ) return Error(SYNTAX_ERR,"");
+  for( ; count > 0 ; --count){
+    writeByte((char)v);
+  }
+//->  if ( all_err ) saveCurrentLine();
+  return 0;
+}
+
+/*
+
   DC.W,DW
 
 */
@@ -277,6 +306,39 @@ int p_defineword(int d)
   if ( all_err ) saveCurrentLine();
   return 0;
 }
+/*
+
+  DCB.W,DWB
+
+*/
+int p_definewordblock(int d)
+{
+  int err;
+  int32_t v;
+  int32_t count;
+  int all_err = 0;
+
+  KillSpace();
+  if ( atom == EOF ) return Error(SYNTAX_ERR,"");
+
+  if ( (err = NeedConst( &v, "DCB.W" )) ) return err;
+  //  if ( (err = Expression( &v )) == EXPR_ERROR ) return 1;
+  // if ( err == EXPR_UNSOLVED ) ++all_err;
+  if ( v < -32768L || v > 65535L ) return Error(WORD_ERR,"");
+  if ( !TestAtom(',') ) return Error(SYNTAX_ERR,"");
+  if ( (err = NeedConst( &count, "DCB.W" )) ) return err;
+  if ( count <= 0 ) return Error(SYNTAX_ERR,"");
+  for( ; count > 0 ; --count){
+    if ( Endian() == targetLITTLE_ENDIAN ){
+      writeWordLittle((short)v);
+    }else{
+      writeWordBig((short)v);
+    }
+  }
+//->  if ( all_err ) saveCurrentLine();
+  return 0;
+}
+
 /*
 
   DC.L,DL
@@ -305,6 +367,38 @@ int p_definelong(int d)
 }
 /*
 
+  DCB.L,DLB
+
+*/
+int p_definelongblock(int d)
+{
+  int err;
+  int32_t v;
+  int32_t count;
+  int all_err = 0;
+
+  KillSpace();
+  if ( atom == EOF ) return Error(SYNTAX_ERR,"");
+
+  if ( (err = NeedConst( &v, "DCB.W" )) ) return err;
+  //  if ( (err = Expression( &v )) == EXPR_ERROR ) return 1;
+  // if ( err == EXPR_UNSOLVED ) ++all_err;
+  if ( !TestAtom(',') ) return Error(SYNTAX_ERR,"");
+  if ( (err = NeedConst( &count, "DCB.W" )) ) return err;
+  if ( count <= 0 ) return Error(SYNTAX_ERR,"");
+  for( ; count > 0 ; --count){
+    if ( Endian() == targetLITTLE_ENDIAN ){
+      writeLongLittle((long)v);
+    }else{
+      writeLongBig((long)v);
+    }
+  }
+//->  if ( all_err ) saveCurrentLine();
+  return 0;
+}
+
+/*
+
   DC.P,DP
 
 */
@@ -327,6 +421,36 @@ int p_definephrase(int d)
   } while ( TestAtom(',') );
 
   if ( all_err ) saveCurrentLine();
+  return 0;
+}
+/*
+
+  DCB.P,DPB
+
+*/
+int p_definephraseblock(int d)
+{
+  int err;
+  int64_t vv;
+  int32_t count;
+  int all_err = 0;
+
+  KillSpace();
+  if ( atom == EOF ) return Error(SYNTAX_ERR,"");
+//->  if ( (err = Expression64( &vv )) == EXPR_ERROR ) return 1;
+//->  if ( err == EXPR_UNSOLVED ) ++all_err;
+  if ( (err = NeedConst64( &vv, "DCB.P" )) ) return err;
+  if ( !TestAtom(',') ) return Error(SYNTAX_ERR,"");
+  if ( (err = NeedConst( &count, "DCB.W" )) ) return err;
+  if ( count <= 0 ) return Error(SYNTAX_ERR,"");
+  for( ; count > 0 ; --count){
+    if ( Endian() == targetLITTLE_ENDIAN ){
+      writePhraseLittle(vv);
+    }else{
+      writePhraseBig(vv);
+    }
+  }
+//->  if ( all_err ) saveCurrentLine();
   return 0;
 }
 /*
@@ -470,10 +594,10 @@ int p_equ(int d)
   if ( NeedConst( &l, "EQU") ) return 1;
 
   if ( ! Current.Label.len ){
-    Error(SYNTAX_ERR,"");
+    return Error(SYNTAX_ERR,"");
   }
   if ( (Current.Label.type &  REGISTER) ){
-    Error(SYNTAX_ERR,"Cannot EQU a register label");
+    return Error(SYNTAX_ERR,"Cannot EQU a register label");
   }
 
   if ( (Current.Label.type & VARIABLE) == 0){
@@ -496,9 +620,8 @@ int p_set(int d)
   if ( ! Current.Label.len ) Error(SYNTAX_ERR,"");
 
   if ( (Current.Label.type &  REGISTER) ){
-    Error(SYNTAX_ERR,"Cannot EQU a register label");
+    return Error(SYNTAX_ERR,"Cannot SET/EQU a register label");
   }
-
 
   Current.LabelPtr->type |= VARIABLE;
   Current.LabelPtr->type &= ~CODELABEL;
