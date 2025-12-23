@@ -38,10 +38,10 @@ int uni(int64_t *);
 extern REFERENCE *refFirst;
 extern REFERENCE *refLast;
 
-#define VERSION 0x00011300
+#define VERSION 0x00011401
 
 const char info[] =
-  "tjass/lyxass C-version V 1.14.0 " __DATE__ "\n"
+  "tjass/lyxass C-version V 1.14.1 " __DATE__ "\n"
   "(c) 1993..2003/2022..2025 42Bastian Schick\n";
 
 /********************************************************************/

@@ -33,7 +33,7 @@ int Error(int err_num,const char *s)
   ++cntError;
 
   if ( fatal ){
-    fprintf(stderr,"Fatal Error %d!\n",err_num);
+    fprintf(my_stderr,"Fatal Error %d!\n",err_num);
   }
 
   if (Current.File >= 0){
@@ -194,13 +194,16 @@ int Error(int err_num,const char *s)
   case MISC_ERR:
     fprintf(my_stderr,"%s\n",s);
     break;
+  case LINETOLONG_ERR:
+    fprintf(my_stderr,"Source line to long.\n");
+    break;
   }
 
   if ( !verbose) verbose=1;
   killLine();
 
   if ( fatal ){
-    fprintf(stderr,"leaving ...\n");
+    fprintf(my_stderr,"leaving ...\n");
     exit(1);
   }
   return err_num;

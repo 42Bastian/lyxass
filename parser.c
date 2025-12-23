@@ -22,7 +22,7 @@ int next_atom;
 int last_atom;
 
 char * srcLinePtr;
-char srcLine[256];
+char srcLine[1024];
 
 char * loadBuffer;
 
@@ -42,7 +42,7 @@ int GetLine();
 /********************************************/
 /* get a source-file and add it to the list */
 /********************************************/
-char line[256];
+char line[1024];
 
 int LoadSource(char fn[])
 {
@@ -67,8 +67,8 @@ int LoadSource(char fn[])
       char c;
       char *ptrLine = line;
 
-      memset(line,0,254);
-      if ( fgets(line,254,f) == NULL ){
+      memset(line,0,sizeof(line));
+      if ( fgets(line,sizeof(line)-2,f) == NULL ){
         break;
       }
       ptr_start = ptr;
@@ -212,7 +212,7 @@ int GetLine()
   int last_ch = 0;
 
   srcLinePtr = ptr = srcLine;
-  memset((char *)ptr,0,256);
+  memset((char *)ptr,0,sizeof(srcLine));
 
   memset((char *)&Current.Label, 0, sizeof(label_t));
 
@@ -295,10 +295,11 @@ int GetLine()
     }
     last_ch = ch;
     *ptr++ = ch;
-
+    if ( ptr > srcLine+sizeof(srcLine) ) {
+      srcLine[0] = 0;
+      return Error(-LINETOLONG_ERR,"");
+    }
   }
-
-  if ( srcLinePtr[255] ) exit(1);
 
   if ( ch == EOF && ptr == srcLinePtr ){
     return 0;
@@ -602,6 +603,7 @@ int GetCmd(void)
         len++;
       }while ( GetAtom() && (LabelTable[atom] || atom == '.') );
   }
+
   Current.CmdLen = len;
   *ptr++ = 0;
   return (len == 0);

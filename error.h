@@ -57,3 +57,5 @@ void Warning(const char *);
 #define REG_ERR        44
 #define REG1_ERR       45
 #define MISC_ERR       46
+//
+#define LINETOLONG_ERR 47
